@@ -9,8 +9,8 @@ import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { BackgroundColorTypes } from '../types/backgroud-color.types';
 
 //swagger 사용 고려한 주석
-@Entity('shows')
-export class Show {
+@Entity('boards')
+export class Board {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
