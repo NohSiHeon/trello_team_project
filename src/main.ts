@@ -14,7 +14,6 @@ async function bootstrap() {
     .setTitle('Easy board maker example')
     .setDescription('The Easy board maker API description')
     .setVersion('1.0')
-    // .addTag('cats')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .build();
 
