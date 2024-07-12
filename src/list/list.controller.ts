@@ -20,6 +20,11 @@ export class ListController {
     return await this.listService.updateList(+id, createListDto);
   }
 
+  @Delete('lists/:id')
+  async removeList(@Param('id') id: string) {
+    return await this.listService.removeList(+id);
+  }
+
   // @Get()
   // findAll() {
   //   return this.listService.findAll();
@@ -30,8 +35,5 @@ export class ListController {
   //   return this.listService.findOne(+id);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.listService.remove(+id);
-  // }
+
 }

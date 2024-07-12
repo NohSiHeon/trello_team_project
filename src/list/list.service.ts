@@ -15,10 +15,10 @@ export class ListService {
 
   //리스트 존재 여부
 
-  async existList(title: string) {
+  async existList(id: number) {
 
     const existList = await this.listRepository.findOne({
-      where: {title: title}
+      where: {listId: id}
     });
 
     return existList;
@@ -28,7 +28,10 @@ export class ListService {
 
   async createList(id: number, createListDto: CreateListDto) {
 
-    const existList = this.existList(createListDto.title);
+    const existList = await this.listRepository.findOne({
+      where: {title: createListDto.title}
+    });
+    
     if(existList) {
       throw new BadRequestException(
         '이미 존재하는 리스트 명 입니다.'
@@ -47,7 +50,7 @@ export class ListService {
 
   async updateList(id: number, createListDto: CreateListDto) {
 
-    const existList = this.existList(createListDto.title);
+    const existList = this.existList(id);
     if(!existList) {
       throw new BadRequestException(
         '존재하지 않는 리스트입니다.'
@@ -62,15 +65,29 @@ export class ListService {
     return updateList;
   }
 
+  //리스트 삭제
+
+  async removeList(id: number) {
+
+    const existList = this.existList(id);
+    if(!existList) {
+      throw new BadRequestException(
+        '존재하지 않는 리스트입니다.'
+      )
+    };
+
+    const deleteList = await this.listRepository.delete(
+      {listId: id}
+    );
+
+    return deleteList;
+  };
+
   // findAll() {
   //   return `This action returns all list`;
   // }
 
   // findOne(id: number) {
   //   return `This action returns a #${id} list`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} list`;
   // }
 }
