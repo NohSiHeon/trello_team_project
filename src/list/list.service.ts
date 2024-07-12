@@ -62,7 +62,7 @@ export class ListService {
         });
       } else {
         listOrder.listOrder.push(createNewList.listId);
-        await manager.save(ListOrder);
+        await manager.save(ListOrder, listOrder);
       }
 
       return createNewList;
@@ -114,12 +114,14 @@ export class ListService {
       where: {boardId: id},
     })
 
+    const orderId = listOrder.listOrder;
+
     const findList = await this.listRepository.query(
       `select a.title
       from lists a join list_orders b
       on a.board_id = b.order_id 
       where a.board_id = ${id}
-      order by FIELD(a.list_id , b.list_order)`
+      order by FIELD(a.list_id , ${orderId.join(',')})`
     );
 
     return findList;
