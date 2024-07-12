@@ -16,9 +16,17 @@ export class List {
   @JoinColumn({ name: 'board_id' , referencedColumnName: 'id'})
   board: Board;
 
+  /**
+   * 보드id
+   * @example 1
+   */
   @Column({ type: 'int', name: 'board_id' , unsigned: true})
   boardId: number;
 
+  /**
+   * 리스트 명
+   * @example Done
+   */
   @IsString()
   @IsNotEmpty()
   @Column({ type: 'varchar', name: 'title' })

@@ -44,19 +44,20 @@ export class ListService {
       }
     });
 
-    return isMember;
-  }
+    if(!isMember) {
+      throw new UnauthorizedException(
+        '보드의 멤버가 아닙니다.'
+      );
+    }else{
+      return isMember;
+    }
+  };
   
   //리스트 생성
 
   async createList(id: number, user: User , createListDto: CreateListDto) {
 
-    const isMember = await this.isMember(id, user.id);
-    if(!isMember) {
-      throw new UnauthorizedException(
-        '보드의 멤버가 아닙니다.'
-      );
-    };
+    await this.isMember(id, user.id);
 
     const existList = await this.listRepository.findOne({
       where: {title: createListDto.title}
@@ -98,12 +99,7 @@ export class ListService {
 
   async updateList(id: number, user: User ,createListDto: CreateListDto) {
 
-    const isMember = await this.isMember(id, user.id);
-    if(!isMember) {
-      throw new UnauthorizedException(
-        '보드의 멤버가 아닙니다.'
-      );
-    };
+    await this.isMember(id, user.id);
 
     const existList = await this.existList(id);
     if(!existList) {
@@ -124,12 +120,7 @@ export class ListService {
 
   async removeList(id: number, user: User ) {
 
-    const isMember = await this.isMember(id, user.id);
-    if(!isMember) {
-      throw new UnauthorizedException(
-        '보드의 멤버가 아닙니다.'
-      );
-    };
+    await this.isMember(id, user.id);
 
     const existList = await this.existList(id);
     if(!existList) {
@@ -149,12 +140,7 @@ export class ListService {
 
   async findAllList(id: number, user: User) {
 
-    const isMember = await this.isMember(id, user.id);
-    if(!isMember) {
-      throw new UnauthorizedException(
-        '보드의 멤버가 아닙니다.'
-      );
-    };
+    await this.isMember(id, user.id);
 
     const listOrder = await this.listOrderRepository.findOne({
       where: {boardId: id},
@@ -178,12 +164,7 @@ export class ListService {
 
   async updateListOrder(id: number, user: User ,updateOrderDto: UpdateOrderDto) {
 
-    const isMember = await this.isMember(id, user.id);
-    if(!isMember) {
-      throw new UnauthorizedException(
-        '보드의 멤버가 아닙니다.'
-      );
-    };
+    await this.isMember(id, user.id);
 
     let listOrder = await this.listOrderRepository.findOne({
       where: {boardId: id}
