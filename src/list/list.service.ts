@@ -110,9 +110,17 @@ export class ListService {
 
   async findAllList(id: number) {
 
-    const findList = await this.listRepository.find({
-      where: {boardId: id}
-    });
+    const listOrder = await this.listOrderRepository.findOne({
+      where: {boardId: id},
+    })
+
+    const findList = await this.listRepository.query(
+      `select a.title
+      from lists a join list_orders b
+      on a.board_id = b.order_id 
+      where a.board_id = ${id}
+      order by FIELD(a.list_id , b.list_order)`
+    );
 
     return findList;
     
