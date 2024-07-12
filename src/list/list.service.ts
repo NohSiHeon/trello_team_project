@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateListDto } from './dto/create-list.dto';
 import { List } from './entities/list.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, EntityManager, QueryFailedError} from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ListOrder } from './entities/listOrder.entity';
 
@@ -13,6 +13,7 @@ export class ListService {
     private listRepository: Repository<List>,
     @InjectRepository(ListOrder)
     private listOrderRepository: Repository<ListOrder>,
+    private entityManager: EntityManager,
     //private readonly jwtService: JwtService,
   ) {}
 
@@ -41,27 +42,30 @@ export class ListService {
       )
     };
 
-    const createNewList = await this.listRepository.save({
-      boardId: id,
-      title: createListDto.title,
-    });
+    //트랜잭션 ( 리스트 추가, 리스트 오더 배열 추가)
+    return await this.entityManager.transaction(async (manager) => {
 
-    let listOrder = await this.listOrderRepository.findOne({
-      where: { boardId: id },
-    });
-
-    if (!listOrder) {
-      listOrder = this.listOrderRepository.create({
+      const createNewList = await manager.save(List,{
         boardId: id,
-        listOrder: [createNewList.listId],
+        title: createListDto.title,
       });
-    } else {
-      listOrder.listOrder.push(createNewList.listId);
-    }
 
-    await this.listOrderRepository.save(listOrder);
+      let listOrder = await manager.findOne(ListOrder, {
+        where: { boardId: id },
+      });
 
-    return createNewList;
+      if (!listOrder) {
+        await manager.save(ListOrder, {
+          boardId: id,
+          listOrder: [createNewList.listId],
+        });
+      } else {
+        listOrder.listOrder.push(createNewList.listId);
+        await manager.save(ListOrder);
+      }
+      
+      return createNewList;
+    });
   };
 
   //리스트 이름 수정
