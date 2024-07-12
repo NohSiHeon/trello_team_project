@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateListDto } from './dto/create-list.dto';
 import { List } from './entities/list.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +6,8 @@ import { Repository, EntityManager, QueryFailedError} from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ListOrder } from './entities/listOrder.entity';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { Member } from 'src/board/entities/member.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class ListService {
@@ -14,8 +16,10 @@ export class ListService {
     private listRepository: Repository<List>,
     @InjectRepository(ListOrder)
     private listOrderRepository: Repository<ListOrder>,
+    @InjectRepository(Member)
+    private memberRepository: Repository<Member>,
     private entityManager: EntityManager,
-    //private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   //리스트 존재 여부
@@ -28,10 +32,31 @@ export class ListService {
 
     return existList;
   };
+
+  //멤버 확인
+
+  async isMember(boardId: number, userId: number) {
+
+    const isMember = await this.memberRepository.findOne({
+      where: {
+        boardId: boardId,
+        userId: userId,
+      }
+    });
+
+    return isMember;
+  }
   
   //리스트 생성
 
-  async createList(id: number, createListDto: CreateListDto) {
+  async createList(id: number, user: User , createListDto: CreateListDto) {
+
+    const isMember = await this.isMember(id, user.id);
+    if(!isMember) {
+      throw new UnauthorizedException(
+        '보드의 멤버가 아닙니다.'
+      );
+    };
 
     const existList = await this.listRepository.findOne({
       where: {title: createListDto.title}
@@ -71,9 +96,16 @@ export class ListService {
 
   //리스트 이름 수정
 
-  async updateList(id: number, createListDto: CreateListDto) {
+  async updateList(id: number, user: User ,createListDto: CreateListDto) {
 
-    const existList = this.existList(id);
+    const isMember = await this.isMember(id, user.id);
+    if(!isMember) {
+      throw new UnauthorizedException(
+        '보드의 멤버가 아닙니다.'
+      );
+    };
+
+    const existList = await this.existList(id);
     if(!existList) {
       throw new NotFoundException(
         '존재하지 않는 리스트입니다.'
@@ -90,9 +122,16 @@ export class ListService {
 
   //리스트 삭제
 
-  async removeList(id: number) {
+  async removeList(id: number, user: User ) {
 
-    const existList = this.existList(id);
+    const isMember = await this.isMember(id, user.id);
+    if(!isMember) {
+      throw new UnauthorizedException(
+        '보드의 멤버가 아닙니다.'
+      );
+    };
+
+    const existList = await this.existList(id);
     if(!existList) {
       throw new NotFoundException(
         '존재하지 않는 리스트입니다.'
@@ -108,7 +147,14 @@ export class ListService {
 
   //리스트 조회
 
-  async findAllList(id: number) {
+  async findAllList(id: number, user: User) {
+
+    const isMember = await this.isMember(id, user.id);
+    if(!isMember) {
+      throw new UnauthorizedException(
+        '보드의 멤버가 아닙니다.'
+      );
+    };
 
     const listOrder = await this.listOrderRepository.findOne({
       where: {boardId: id},
@@ -130,7 +176,14 @@ export class ListService {
 
   //리스트 순서 이동
 
-  async updateListOrder(id: number, updateOrderDto: UpdateOrderDto) {
+  async updateListOrder(id: number, user: User ,updateOrderDto: UpdateOrderDto) {
+
+    const isMember = await this.isMember(id, user.id);
+    if(!isMember) {
+      throw new UnauthorizedException(
+        '보드의 멤버가 아닙니다.'
+      );
+    };
 
     let listOrder = await this.listOrderRepository.findOne({
       where: {boardId: id}

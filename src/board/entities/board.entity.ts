@@ -52,6 +52,6 @@ export class Board {
   @OneToMany(() => List, (list) => list.board)
   list: List[];
 
-  @OneToOne(() => ListOrder, (listOrder) => listOrder.board)
+  @OneToOne(() => ListOrder, (listOrder) => listOrder.board, { cascade: true })
   listOrder: ListOrder;
 }

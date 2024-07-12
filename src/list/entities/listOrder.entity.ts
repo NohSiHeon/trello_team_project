@@ -11,11 +11,11 @@ export class ListOrder {
   @PrimaryGeneratedColumn({name: 'order_id'})
   orderId: number;
 
-  @OneToOne(() => Board, (board) => board.list)
-  @JoinColumn({ name: 'id' })
+  @OneToOne(() => Board, (board) => board.listOrder, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'board_id' , referencedColumnName: 'id'})
   board: Board;
 
-  @Column({ type: 'int', name: 'board_id' })
+  @Column({ type: 'int', name: 'board_id' , unsigned: true })
   boardId: number;
 
   @IsNotEmpty()

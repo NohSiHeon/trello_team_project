@@ -13,10 +13,10 @@ export class List {
   listId: number;
 
   @ManyToOne(() => Board, (board) => board.list)
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'board_id' , referencedColumnName: 'id'})
   board: Board;
 
-  @Column({ type: 'int', name: 'board_id' })
+  @Column({ type: 'int', name: 'board_id' , unsigned: true})
   boardId: number;
 
   @IsString()

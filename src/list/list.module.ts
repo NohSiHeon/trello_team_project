@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ListService } from './list.service';
@@ -9,6 +7,10 @@ import { List } from './entities/list.entity';
 import { Board } from 'src/board/entities/board.entity';
 import { ListOrder } from './entities/listOrder.entity';
 import { CardOrder } from './entities/cardOrder.entity';
+import { Member } from 'src/board/entities/member.entity';
+import { AuthModule } from 'src/auth/auth.module';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -18,7 +20,8 @@ import { CardOrder } from './entities/cardOrder.entity';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([List, Board, ListOrder, CardOrder]),
+    TypeOrmModule.forFeature([List, Board, ListOrder, CardOrder, Member]),
+    AuthModule
   ],
   providers: [ListService],
   controllers: [ListController],
