@@ -11,8 +11,8 @@ export class ListOrder {
   @PrimaryGeneratedColumn({name: 'order_id'})
   orderId: number;
 
-  @ManyToOne(() => Board, (board) => board.list)
-  @JoinColumn({ name: 'board_id' })
+  @OneToOne(() => Board, (board) => board.list)
+  @JoinColumn({ name: 'id' })
   board: Board;
 
   @Column({ type: 'int', name: 'board_id' })

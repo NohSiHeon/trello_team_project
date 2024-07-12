@@ -13,7 +13,7 @@ export class List {
   listId: number;
 
   @ManyToOne(() => Board, (board) => board.list)
-  @JoinColumn({ name: 'board_id' })
+  @JoinColumn({ name: 'id' })
   board: Board;
 
   @Column({ type: 'int', name: 'board_id' })
