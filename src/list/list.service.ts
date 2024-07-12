@@ -4,12 +4,15 @@ import { List } from './entities/list.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { ListOrder } from './entities/listOrder.entity';
 
 @Injectable()
 export class ListService {
   constructor(
     @InjectRepository(List)
     private listRepository: Repository<List>,
+    @InjectRepository(ListOrder)
+    private listOrderRepository: Repository<ListOrder>,
     //private readonly jwtService: JwtService,
   ) {}
 
@@ -42,6 +45,21 @@ export class ListService {
       boardId: id,
       title: createListDto.title,
     });
+
+    let listOrder = await this.listOrderRepository.findOne({
+      where: { boardId: id },
+    });
+
+    if (!listOrder) {
+      listOrder = this.listOrderRepository.create({
+        boardId: id,
+        listOrder: [createNewList.listId],
+      });
+    } else {
+      listOrder.listOrder.push(createNewList.listId);
+    }
+
+    await this.listOrderRepository.save(listOrder);
 
     return createNewList;
   };
@@ -81,6 +99,19 @@ export class ListService {
     );
 
     return deleteList;
+  };
+
+  //리스트 순서 이동
+
+  async updateListOrder(id: number) {
+
+    const existList = this.existList(id);
+    if(!existList) {
+      throw new BadRequestException(
+        '존재하지 않는 리스트입니다.'
+      )
+    };
+
   };
 
   // findAll() {

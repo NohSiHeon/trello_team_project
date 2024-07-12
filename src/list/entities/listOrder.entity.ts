@@ -20,7 +20,7 @@ export class ListOrder {
 
   @IsNotEmpty()
   @Column({ type: 'json', name: 'list_order' })
-  listOrder: string[];
+  listOrder: number[];
 
   @CreateDateColumn()
   createdAt: Date;
