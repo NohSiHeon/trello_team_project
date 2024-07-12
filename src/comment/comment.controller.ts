@@ -11,12 +11,18 @@ import {
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('댓글 API')
 @Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  // 댓글생성
+  /**
+   * 댓글 생성
+   * @param createCommentDto
+   * @returns
+   */
   @Post('/cards/comments') //:cardid 추가
   async create(
     // @Param('cardId') cardId: string, < 합치고 추가
@@ -30,7 +36,11 @@ export class CommentController {
     };
   }
 
-  // 댓글조회
+  /**
+   * 댓글 조회
+   * @param id
+   * @returns
+   */
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     const data = await this.commentService.findOne(+id);
@@ -41,7 +51,12 @@ export class CommentController {
     };
   }
 
-  // 댓글수정
+  /**
+   * 댓글 수정
+   * @param id
+   * @param updateCommentDto
+   * @returns
+   */
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -55,7 +70,11 @@ export class CommentController {
     };
   }
 
-  // 댓글삭제
+  /**
+   * 댓글 삭제
+   * @param id
+   * @returns
+   */
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const data = await this.commentService.remove(+id);

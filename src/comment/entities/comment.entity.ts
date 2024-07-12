@@ -9,13 +9,15 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({
-  name: 'comments',
-})
+@Entity({ name: 'comments' })
 export class Comment {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
+  /**
+   * 댓글 내용
+   * @example "스케줄 확인하고 진행하겠습니다!"
+   */
   @IsNotEmpty({ message: '내용을 입력해주세요' })
   @IsString()
   @Column()
