@@ -6,6 +6,7 @@ import { TypeOrmModuleOptions } from './configs/database.config';
 import { ConfigModuleValidationSchema } from './configs/env.validation.config';
 import { ConfigModule } from '@nestjs/config';
 import { ListModule } from './list/list.module';
+import { BoardModule } from './board/board.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ListModule } from './list/list.module';
     }),
     TypeOrmModule.forRootAsync(TypeOrmModuleOptions),
     ListModule,
+    BoardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
