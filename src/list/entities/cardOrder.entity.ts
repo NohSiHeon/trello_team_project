@@ -11,7 +11,7 @@ export class CardOrder {
   @PrimaryGeneratedColumn({name: 'order_id'})
   orderId: number;
 
-  @ManyToOne(() => List, (list) => list.cardOrder)
+  @OneToOne(() => List, (list) => list.cardOrder)
   @JoinColumn({ name: 'list_id' })
   list: List;
 

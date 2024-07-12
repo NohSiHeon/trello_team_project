@@ -3,12 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { BackgroundColorTypes } from '../types/backgroud-color.types';
 import { List } from 'src/list/entities/list.entity';
+import { ListOrder } from 'src/list/entities/listOrder.entity';
 
 //swagger 사용 고려한 주석
 @Entity('boards')
@@ -49,4 +51,7 @@ export class Board {
 
   @OneToMany(() => List, (list) => list.board)
   list: List[];
+
+  @OneToOne(() => ListOrder, (listOrder) => listOrder.board)
+  listOrder: ListOrder;
 }

@@ -1,34 +1,37 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ListService } from './list.service';
 import { CreateListDto } from './dto/create-list.dto';
-import { UpdateListDto } from './dto/update-list.dto';
+import { AuthGuard } from '@nestjs/passport';
 
-@Controller('list')
+@Controller('')
 export class ListController {
   constructor(private readonly listService: ListService) {}
 
-  @Post()
-  create(@Body() createListDto: CreateListDto) {
-    return this.listService.create(createListDto);
+  //리스트 생성
+
+  @Post('boards/:id/lists')
+  //@UseGuards(AuthGuard('jwt'))
+  async createList(@Param('id') id: string, @Body() createListDto: CreateListDto) {
+    return await this.listService.createList(+id, createListDto);
   }
 
-  @Get()
-  findAll() {
-    return this.listService.findAll();
+  @Patch('lists/:id')
+  async updateList(@Param('id') id: string, @Body() createListDto: CreateListDto) {
+    return await this.listService.updateList(+id, createListDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listService.findOne(+id);
-  }
+  // @Get()
+  // findAll() {
+  //   return this.listService.findAll();
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateListDto: UpdateListDto) {
-    return this.listService.update(+id, updateListDto);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.listService.findOne(+id);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.listService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.listService.remove(+id);
+  // }
 }
