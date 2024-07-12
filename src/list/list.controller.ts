@@ -34,6 +34,4 @@ export class ListController {
   // findOne(@Param('id') id: string) {
   //   return this.listService.findOne(+id);
   // }
-
-
 }
