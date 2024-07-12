@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager, QueryFailedError} from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ListOrder } from './entities/listOrder.entity';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class ListService {
@@ -115,5 +116,30 @@ export class ListService {
 
     return findList;
     
+  };
+
+  //리스트 순서 이동
+
+  async updateListOrder(id: number, updateOrderDto: UpdateOrderDto) {
+
+    let listOrder = await this.listOrderRepository.findOne({
+      where: {boardId: id}
+    });
+
+    const listIndex = listOrder.listOrder.indexOf(updateOrderDto.listId);
+    const newIndex = updateOrderDto.sort-1;
+
+    if (listIndex === -1) {
+      throw new BadRequestException(
+        '리스트가 존재하지 않습니다.');
+    }
+
+    const itemToMove = listOrder.listOrder[listIndex];
+    listOrder.listOrder.splice(listIndex, 1);
+    listOrder.listOrder.splice(newIndex, 0, itemToMove);
+
+    await this.listOrderRepository.save(listOrder);
+
+    return listOrder;
   };
 }

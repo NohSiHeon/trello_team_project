@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ListService } from './list.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller('')
 export class ListController {
@@ -20,6 +21,13 @@ export class ListController {
   @Get('boards/:id/lists')
   async findAllList(@Param('id') id: string) {
     return this.listService.findAllList(+id);
+  }
+
+  //리스트 순서 변경
+
+  @Patch('boards/:id/listOrder')
+  async updateListOrder(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+    return await this.listService.updateListOrder(+id, updateOrderDto);
   }
 
   //리스트 이름 수정
