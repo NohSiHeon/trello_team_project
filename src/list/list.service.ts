@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateListDto } from './dto/create-list.dto';
 import { List } from './entities/list.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -63,7 +63,7 @@ export class ListService {
         listOrder.listOrder.push(createNewList.listId);
         await manager.save(ListOrder);
       }
-      
+
       return createNewList;
     });
   };
@@ -74,7 +74,7 @@ export class ListService {
 
     const existList = this.existList(id);
     if(!existList) {
-      throw new BadRequestException(
+      throw new NotFoundException(
         '존재하지 않는 리스트입니다.'
       )
     };
@@ -93,7 +93,7 @@ export class ListService {
 
     const existList = this.existList(id);
     if(!existList) {
-      throw new BadRequestException(
+      throw new NotFoundException(
         '존재하지 않는 리스트입니다.'
       )
     };
@@ -105,24 +105,15 @@ export class ListService {
     return deleteList;
   };
 
-  //리스트 순서 이동
+  //리스트 조회
 
-  async updateListOrder(id: number) {
+  async findAllList(id: number) {
 
-    const existList = this.existList(id);
-    if(!existList) {
-      throw new BadRequestException(
-        '존재하지 않는 리스트입니다.'
-      )
-    };
+    const findList = await this.listRepository.find({
+      where: {boardId: id}
+    });
 
+    return findList;
+    
   };
-
-  // findAll() {
-  //   return `This action returns all list`;
-  // }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} list`;
-  // }
 }
