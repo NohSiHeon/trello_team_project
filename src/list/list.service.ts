@@ -57,8 +57,7 @@ export class ListService {
 
   //리스트 생성
 
-  async createList(user: User , createListDto: CreateListDto) {
-
+  async createList(user: User, createListDto: CreateListDto) {
     await this.isMember(createListDto.boardId, user.id);
 
     const existList = await this.listRepository.findOne({
@@ -71,13 +70,12 @@ export class ListService {
 
     //트랜잭션 ( 리스트 추가, 리스트 오더 배열 추가)
     return await this.entityManager.transaction(async (manager) => {
-
-      const createNewList = await manager.save(List,{
+      const createNewList = await manager.save(List, {
         boardId: createListDto.boardId,
         title: createListDto.title,
       });
 
-      let listOrder = await manager.findOne(ListOrder, {
+      const listOrder = await manager.findOne(ListOrder, {
         where: { boardId: createListDto.boardId },
       });
 
@@ -131,13 +129,12 @@ export class ListService {
   //리스트 조회
 
   async findAllList(user: User, findListDto: FindListDto) {
-
     await this.isMember(findListDto.boardId, user.id);
     console.log(findListDto.boardId);
 
     const listOrder = await this.listOrderRepository.findOne({
-      where: {boardId: findListDto.boardId},
-    })
+      where: { boardId: findListDto.boardId },
+    });
 
     const orderId = listOrder.listOrder;
 
@@ -146,7 +143,7 @@ export class ListService {
       from lists a join list_orders b
       on a.board_id = b.order_id 
       where a.board_id = ${findListDto.boardId}
-      order by FIELD(a.list_id , ${orderId.join(',')})`
+      order by FIELD(a.list_id , ${orderId.join(',')})`,
     );
 
     return findList;
@@ -154,12 +151,11 @@ export class ListService {
 
   //리스트 순서 이동
 
-  async updateListOrder(user: User ,updateOrderDto: UpdateOrderDto) {
-
+  async updateListOrder(user: User, updateOrderDto: UpdateOrderDto) {
     await this.isMember(updateOrderDto.boardId, user.id);
 
-    let listOrder = await this.listOrderRepository.findOne({
-      where: {boardId: updateOrderDto.boardId}
+    const listOrder = await this.listOrderRepository.findOne({
+      where: { boardId: updateOrderDto.boardId },
     });
 
     const listIndex = listOrder.listOrder.indexOf(updateOrderDto.listId);
