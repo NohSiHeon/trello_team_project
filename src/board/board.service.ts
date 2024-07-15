@@ -9,14 +9,15 @@ import { Board } from './entities/board.entity';
 import { Repository } from 'typeorm';
 import { Member } from './entities/member.entity';
 import { User } from 'src/user/entities/user.entity';
-//import { assignmentDto } from './dto/assignment.dto';
+import { CheckEmailDto } from 'src/user/dto/check-email.dto';
+import { assignmentDto } from './dto/assignment.dto';
 
 @Injectable()
 export class BoardService {
   constructor(
     @InjectRepository(Board) private boardRepository: Repository<Board>,
     @InjectRepository(Member) private memberRepository: Repository<Member>,
-    //@InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
   async create(userId: number, boardTitle: string) {
     const data = await this.boardRepository.save({
@@ -77,8 +78,20 @@ export class BoardService {
     return removeUser;
   }
 
-  //  async assignment(adminId: number, boardId: number, email: assignmentDto) {
-  //    const existedUser = await this.userRepository.find({email: email})
-  //    return 'assigned';
-  //  }
+  async inviteMember(adminId: number, boardId: number, email: assignmentDto) {
+    const boardData = await this.boardRepository.findOne({
+      where: { id: boardId },
+    });
+    if (boardData.id != adminId) {
+      throw new UnauthorizedException('초대 권한이 없습니다');
+    }
+    const assignInfo = await this.memberRepository.find({
+      where: { boardId: boardId },
+    });
+    const Email = email.email;
+    const existedUser = await this.userRepository.findOne({
+      where: { email: Email },
+    });
+    return 'assigned';
+  }
 }

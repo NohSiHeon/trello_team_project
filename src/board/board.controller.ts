@@ -17,12 +17,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserInfo } from 'src/util/user-info.decorator';
 import { User } from 'src/user/entities/user.entity';
-//import { assignmentDto } from './dto/assignment.dto';
+import { CheckEmailDto } from 'src/user/dto/check-email.dto';
 
 @ApiTags('boards')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('board')
+@Controller('boards')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
@@ -101,16 +101,21 @@ export class BoardController {
     console.log(+boardId);
     return this.boardService.remove(+boardId);
   }
-  /*
-  @UseGuards(AuthGuard('jwt'))
-  @Post(':id')
-  assignment(
+
+  /**
+   * 보드 초대
+   * @param req
+   * @param boardId
+   * @param email
+   * @returns
+   */
+  @Post(':boardId/invite')
+  inviteMember(
     @Request() req,
-    @Param('id') boardId: number,
-    @Body('email') email: assignmentDto,
+    @Param('boardId') boardId: number,
+    @Body('email') email: CheckEmailDto,
   ) {
     const adminId = req.user.id;
-    return this.boardService.assignment(+adminId, +boardId, email);
+    return this.boardService.inviteMember(+adminId, +boardId, email);
   }
-    */
 }

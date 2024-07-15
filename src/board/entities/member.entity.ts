@@ -1,15 +1,22 @@
-import { Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { IsNumber } from 'class-validator';
 //import { Assignee } from 'src/assignee/entities/assignee.entity';
 
 @Entity('members')
 export class Member {
   /**
+   * 멤버 아이디
+   * @example 1
+   */
+  @PrimaryGeneratedColumn({ unsigned: true })
+  id: number;
+
+  /**
    * 보드  id
    * @example 1
    */
   @IsNumber()
-  @PrimaryColumn({ unsigned: true })
+  @Column({ unsigned: true })
   boardId: number;
 
   /**
@@ -17,7 +24,7 @@ export class Member {
    * @example 1
    */
   @IsNumber()
-  @PrimaryColumn({ name: 'user_id', unsigned: true })
+  @Column({ name: 'user_id', unsigned: true })
   userId: number;
 
   // @OneToMany(() => Assignee, (assignee) => assignee.member)

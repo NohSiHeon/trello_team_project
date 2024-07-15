@@ -29,7 +29,10 @@ export class ListController {
    */
   @Post('')
   @UseGuards(JwtAuthGuard)
-  async createList(@UserInfo() user: User, @Body() createListDto: CreateListDto) {
+  async createList(
+    @UserInfo() user: User,
+    @Body() createListDto: CreateListDto,
+  ) {
     return await this.listService.createList(user, createListDto);
   }
 
@@ -51,7 +54,10 @@ export class ListController {
    */
   @Patch('listOrders')
   @UseGuards(JwtAuthGuard)
-  async updateListOrder(@UserInfo() user: User, @Body() updateOrderDto: UpdateOrderDto) {
+  async updateListOrder(
+    @UserInfo() user: User,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
     return await this.listService.updateListOrder(user, updateOrderDto);
   }
 
