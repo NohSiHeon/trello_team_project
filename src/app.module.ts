@@ -5,6 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmModuleOptions } from './configs/database.config';
 import { ConfigModuleValidationSchema } from './configs/env.validation.config';
 import { ConfigModule } from '@nestjs/config';
+import { CardModule } from './card/card.module';
+import { AssigneeModule } from './assignee/assignee.module';
+import { MemberModule } from './member/member.module';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { ConfigModule } from '@nestjs/config';
       validationSchema: ConfigModuleValidationSchema,
     }),
     TypeOrmModule.forRootAsync(TypeOrmModuleOptions),
+    CardModule,
+    AssigneeModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [AppService],
