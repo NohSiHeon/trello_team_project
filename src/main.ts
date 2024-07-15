@@ -10,6 +10,11 @@ async function bootstrap() {
   const port = configService.get<number>('SERVER_PORT');
 
   app.setGlobalPrefix('api');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -22,7 +27,6 @@ async function bootstrap() {
     .setTitle('Easy board maker example')
     .setDescription('The Easy board maker API description')
     .setVersion('1.0')
-    // .addTag('cats')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .build();
 
