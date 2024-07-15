@@ -14,12 +14,12 @@ import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 //import { assignmentDto } from './dto/assignment.dto';
 
 @ApiTags('boards')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('board')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
@@ -67,19 +67,26 @@ export class BoardController {
    * @returns
    */
   @Get(':boardId')
-  findOne(@Request() req, @Param('id') id: number) {
-    return this.boardService.findOne(+id);
+  findOne(@Request() req, @Param('boardId') boardId: number) {
+    return this.boardService.findOne(+boardId);
   }
 
   /**
    * 보드 수정
+   * @param req
    * @param boardId
    * @param updateBoardDto
    * @returns
    */
   @Patch(':boardId')
-  update(@Param('id') boardId: number, @Body() updateBoardDto: UpdateBoardDto) {
-    return this.boardService.update(+boardId, updateBoardDto);
+  update(
+    @Request() req,
+    @Param('boardId') boardId: number,
+    @Body() updateBoardDto: UpdateBoardDto,
+  ) {
+    const adminId = req.user.id;
+    console.log(adminId);
+    return this.boardService.update(+adminId, +boardId, updateBoardDto);
   }
 
   /**
@@ -88,7 +95,8 @@ export class BoardController {
    * @returns
    */
   @Delete(':boardId')
-  remove(@Param('id') boardId: number) {
+  remove(@Param('boardId') boardId: number) {
+    console.log(+boardId);
     return this.boardService.remove(+boardId);
   }
   /*

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
@@ -14,11 +18,11 @@ export class BoardService {
     //@InjectRepository(User) private userRepository: Repository<User>,
   ) {}
   async create(userId: number, boardTitle: string) {
-    await this.boardRepository.save({
+    const data = await this.boardRepository.save({
       adminId: userId,
       title: boardTitle,
     });
-    return 'This action adds a new board';
+    return data;
   }
 
   async findAll(userId: number) {
@@ -38,13 +42,22 @@ export class BoardService {
     return `This action returns a #${id} board`;
   }
 
-  async update(id: number, updateBoardDto: UpdateBoardDto) {
-    const existedBoard = await this.boardRepository.findOneBy({ id });
+  async update(
+    adminId: number,
+    boardId: number,
+    updateBoardDto: UpdateBoardDto,
+  ) {
+    const existedBoard = await this.boardRepository.findOne({
+      where: { id: +boardId },
+    });
     if (!existedBoard) {
       throw new NotFoundException('보드 정보가 없습니다');
     }
+    if (existedBoard.adminId != adminId) {
+      throw new UnauthorizedException('해당 보드에 수정 권한이 없습니다.');
+    }
     const updateUser = await this.boardRepository.update(
-      { id: existedBoard.id },
+      { id: +existedBoard.id },
       {
         title: updateBoardDto.title,
         backgroundColor: updateBoardDto.backgroundColor,
@@ -54,12 +67,14 @@ export class BoardService {
   }
 
   async remove(id: number) {
-    const existedBoard = await this.boardRepository.findOneBy({ id });
+    const existedBoard = await this.boardRepository.findOne({
+      where: { id: +id },
+    });
     if (!existedBoard) {
       throw new NotFoundException('보드 정보가 없습니다');
     }
     const removeUser = await this.boardRepository.delete({
-      id: existedBoard.id,
+      id: +existedBoard.id,
     });
     return removeUser;
   }

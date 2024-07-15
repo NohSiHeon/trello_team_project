@@ -4,9 +4,10 @@ import { BoardController } from './board.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
 import { Member } from './entities/member.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Board, Member])],
+  imports: [TypeOrmModule.forFeature([Board, Member]), AuthModule],
   controllers: [BoardController],
   providers: [BoardService],
 })
