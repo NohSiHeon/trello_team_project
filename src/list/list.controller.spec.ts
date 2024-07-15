@@ -19,8 +19,12 @@ describe('ListController', () => {
           provide: ListService,
           useValue: {
             createList: jest.fn(),    //모의 객체 주입
+            findAllList: jest.fn(),
+            updateListOrder: jest.fn(),
+            updateList: jest.fn(),
+            removeList: jest.fn()
           },
-        },
+        },  
       ],
     })
     .overrideGuard(JwtAuthGuard) 
@@ -37,11 +41,11 @@ describe('ListController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('createList', () => {
+  describe('CreateList test', () => {
     it('should create a list', async () => {
       const user: User = { id: 1 } as User;
       const createListDto: CreateListDto = { boardId: 1, title: 'Test List' };
-      const result: List = {
+      const result= {
         listId: 1,
         boardId: createListDto.boardId,
         title: createListDto.title,
@@ -49,8 +53,8 @@ describe('ListController', () => {
         updatedAt: new Date(),
         board: null, 
         cardOrder: null, 
-        cards: [], 
-      } as List;
+        cards: [],
+      };
 
       jest.spyOn(service, 'createList').mockResolvedValue(result);
 
@@ -61,7 +65,7 @@ describe('ListController', () => {
     });
   });
 
-  describe('getList', () => {
+  describe('findAllList test', () => {
     it('should get a list', async () => {
       const user: User = { id: 1 } as User;
       const findListDto: FindListDto = { boardId: 1 };
@@ -74,7 +78,21 @@ describe('ListController', () => {
       const response = await controller.findAllList( user, findListDto);
 
       expect(response).toEqual(result);
-      expect(service.createList).toHaveBeenCalledWith(user, findListDto);
+      expect(service.findAllList).toHaveBeenCalledWith(user, findListDto);
+    });
+  });
+
+  describe('removeList test', () => {
+    it('should remove a list', async () => {
+      const user: User = { id: 1 } as User;
+      const listId = '1';
+
+      jest.spyOn(service, 'removeList').mockResolvedValue(undefined);
+
+      const response = await controller.removeList( listId, user );
+
+      expect(response).toBeUndefined();
+      expect(service.removeList).toHaveBeenCalledWith(+listId, user);
     });
   });
 });
