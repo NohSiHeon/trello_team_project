@@ -1,26 +1,35 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 import {
-  Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { CardOrder } from './cardOrder.entity';
 import { Board } from 'src/board/entities/board.entity';
+import { Card } from 'src/card/entities/card.entity';
 
 @Entity({
   name: 'lists',
 })
 export class List {
-  @PrimaryGeneratedColumn({name: 'list_id'})
+  @PrimaryGeneratedColumn({ name: 'list_id' })
   listId: number;
 
   @ManyToOne(() => Board, (board) => board.list)
-  @JoinColumn({ name: 'board_id' , referencedColumnName: 'id'})
+  @JoinColumn({ name: 'board_id', referencedColumnName: 'id' })
   board: Board;
 
   /**
    * 보드id
    * @example 1
    */
-  @Column({ type: 'int', name: 'board_id' , unsigned: true})
+  @Column({ type: 'int', name: 'board_id', unsigned: true })
   boardId: number;
 
   /**
@@ -40,4 +49,7 @@ export class List {
 
   @OneToOne(() => CardOrder, (cardOrder) => cardOrder.list)
   cardOrder: CardOrder;
+
+  @OneToMany(() => Card, (card) => card.list)
+  cards: Card[];
 }

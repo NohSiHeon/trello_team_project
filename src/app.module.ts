@@ -9,6 +9,8 @@ import { ListModule } from './list/list.module';
 import { BoardModule } from './board/board.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { CardModule } from './card/card.module';
+import { AssigneeModule } from './assignee/assignee.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { UserModule } from './user/user.module';
     BoardModule,
     AuthModule,
     UserModule,
+    CardModule,
+    AssigneeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
