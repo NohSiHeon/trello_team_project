@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+<<<<<<< HEAD
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -35,5 +36,35 @@ async function bootstrap() {
   //이민준 코드여기까지 추가
 
   await app.listen(3000);
+=======
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('SERVER_PORT');
+
+  app.setGlobalPrefix('api');
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Easy board maker example')
+    .setDescription('The Easy board maker API description')
+    .setVersion('1.0')
+    // .addTag('cats')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      tagSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
+  });
+
+  await app.listen(port);
+>>>>>>> 136722d8656ac153ee135eb8b63ba3223e1e4299
 }
 bootstrap();

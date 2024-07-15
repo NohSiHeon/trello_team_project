@@ -6,18 +6,23 @@ import { TypeOrmModuleOptions } from './configs/database.config';
 import { ConfigModuleValidationSchema } from './configs/env.validation.config';
 import { ConfigModule } from '@nestjs/config';
 import { CommentModule } from './comment/comment.module';
+import { ListModule } from './list/list.module';
+import { BoardModule } from './board/board.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      // isGlobal: ConfigModule 을 전역으로 사용
       isGlobal: true,
-      // validationSchema: 환경변수들에대한 유효성 검증
-      // 따로 파일 만들어서 import 해서 가져오기
       validationSchema: ConfigModuleValidationSchema,
     }),
     TypeOrmModule.forRootAsync(TypeOrmModuleOptions),
     CommentModule,
+    ListModule,
+    BoardModule,
+    AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
