@@ -113,7 +113,7 @@ export class BoardController {
   inviteMember(
     @Request() req,
     @Param('boardId') boardId: number,
-    @Body('email') email: CheckEmailDto,
+    @Body() email: CheckEmailDto,
   ) {
     const adminId = req.user.id;
     return this.boardService.inviteMember(+adminId, +boardId, email);

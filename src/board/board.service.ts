@@ -1,4 +1,6 @@
 import {
+  ConflictException,
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -9,7 +11,6 @@ import { Board } from './entities/board.entity';
 import { Repository } from 'typeorm';
 import { Member } from './entities/member.entity';
 import { User } from 'src/user/entities/user.entity';
-import { CheckEmailDto } from 'src/user/dto/check-email.dto';
 import { assignmentDto } from './dto/assignment.dto';
 
 @Injectable()
@@ -24,20 +25,28 @@ export class BoardService {
       adminId: userId,
       title: boardTitle,
     });
-    return data;
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '보드 생성에 성공했습니다.',
+      data: data,
+    };
   }
 
   async findAll(userId: number) {
     const ownBoards = await this.boardRepository.find({
       where: { adminId: userId },
     });
-    const assignedBoards = await this.memberRepository.find({
+    const invitedBoards = await this.memberRepository.find({
       where: {
         userId: userId,
       },
     });
-    const data = { ownBoards, assignedBoards };
-    return data;
+    const data = { ownBoards, invitedBoards };
+    return {
+      statusCode: HttpStatus.OK,
+      message: '보드 목록 조회에 성공했습니다.',
+      data: data,
+    };
   }
 
   findOne(id: number) {
@@ -55,14 +64,21 @@ export class BoardService {
     if (existedBoard.adminId != userId) {
       throw new UnauthorizedException('해당 보드에 수정 권한이 없습니다.');
     }
-    const updateUser = await this.boardRepository.update(
+    await this.boardRepository.update(
       { id: +existedBoard.id },
       {
         title: updateBoardDto.title,
         backgroundColor: updateBoardDto.backgroundColor,
       },
     );
-    return updateUser;
+    const updatedData = await this.boardRepository.findOne({
+      where: { id: +boardId },
+    });
+    return {
+      statusCode: HttpStatus.ACCEPTED,
+      message: '보드 수정에 성공했습니다',
+      data: updatedData,
+    };
   }
 
   async remove(id: number) {
@@ -72,10 +88,14 @@ export class BoardService {
     if (!existedBoard) {
       throw new NotFoundException('보드 정보가 없습니다');
     }
-    const removeUser = await this.boardRepository.delete({
+    await this.boardRepository.delete({
       id: +existedBoard.id,
     });
-    return removeUser;
+    return {
+      statusCode: HttpStatus.OK,
+      message: '보드 삭제에 성공했습니다.',
+      data: id,
+    };
   }
 
   async inviteMember(adminId: number, boardId: number, email: assignmentDto) {
@@ -85,13 +105,28 @@ export class BoardService {
     if (boardData.id != adminId) {
       throw new UnauthorizedException('초대 권한이 없습니다');
     }
-    const assignInfo = await this.memberRepository.find({
-      where: { boardId: boardId },
-    });
     const Email = email.email;
     const existedUser = await this.userRepository.findOne({
       where: { email: Email },
     });
-    return 'assigned';
+    if (!existedUser) {
+      throw new NotFoundException('초대하려는 사용자를 찾을 수 없습니다.');
+    }
+    const inviteInfo = await this.memberRepository.find({
+      where: { boardId: boardId, userId: existedUser.id },
+    });
+    if (inviteInfo) {
+      throw new ConflictException('이미 보드에 초대된 사용자입니다.');
+    }
+
+    const inviteMember = await this.memberRepository.save({
+      boardId: boardId,
+      userId: existedUser.id,
+    });
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '보드 초대가 완료되었습니다.',
+      data: inviteMember,
+    };
   }
 }
