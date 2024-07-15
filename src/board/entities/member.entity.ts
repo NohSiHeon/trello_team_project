@@ -1,7 +1,5 @@
 import { Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { IsNumber } from 'class-validator';
-import { User } from 'src/user/entities/user.entity';
-import { Board } from './board.entity';
 import { Assignee } from 'src/assignee/entities/assignee.entity';
 
 @Entity('members')
@@ -19,9 +17,9 @@ export class Member {
    * @example 1
    */
   @IsNumber()
-  @PrimaryColumn({ unsigned: true })
+  @PrimaryColumn({ name: 'user_id', unsigned: true })
   userId: number;
 
-  @OneToMany(() => Assignee, (assignee) => assignee.members)
-  assignee: Assignee;
+  // @OneToMany(() => Assignee, (assignee) => assignee.member)
+  // assignees: Assignee[];
 }

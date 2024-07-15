@@ -6,14 +6,17 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { Card } from './entities/card.entity';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { ApiResponse } from './interfaces/api-response';
 import { CardService } from './card.service';
 import { UpdateCardDto } from './dtos/update-card.dto';
-import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+// import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('cards')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
@@ -79,6 +82,6 @@ export class CardController {
    * 작업자 할당, 변경
    * @param updateAssigneeDto
    */
-  @Patch(':cardId/assign')
-  async updateAssignee(@Body() updateAssigneeDto: UpdateAssigneeDto) {}
+  // @Patch(':cardId/assign')
+  // async updateAssignee(@Body() updateAssigneeDto: UpdateAssigneeDto) {}
 }

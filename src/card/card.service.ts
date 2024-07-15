@@ -5,13 +5,15 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiResponse } from './interfaces/api-response';
 import { UpdateCardDto } from './dtos/update-card.dto';
+import { List } from 'src/list/entities/list.entity';
 
 @Injectable()
 export class CardService {
   constructor(
     @InjectRepository(Card)
     private cardRepository: Repository<Card>,
-    // private listRepository: Repository<List>,
+    @InjectRepository(List)
+    private listRepository: Repository<List>,
   ) {}
 
   /**
@@ -25,7 +27,7 @@ export class CardService {
     // 리스트 조회
     const list = await this.listRepository.findOne({
       where: {
-        id: listId,
+        listId: card.listId,
       },
     });
 

@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CardColor } from '../types/card-color.type';
 import { Assignee } from 'src/assignee/entities/assignee.entity';
+import { List } from 'src/list/entities/list.entity';
 
 @Entity('cards')
 export class Card {
@@ -40,12 +42,12 @@ export class Card {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // @ManyToOne((type) => List, (list) => list.cards, { onDelete: 'CASCADE' })
-  // list: List;
+  @ManyToOne(() => List, (list) => list.cards, { onDelete: 'CASCADE' })
+  list: List;
 
-  // @OneToMany((type) => Comment, (comment) => comment.card)
+  // @OneToMany(() => Comment, (comment) => comment.card)
   // comments: Comment[];
 
-  @OneToMany(() => Assignee, (assignee) => assignee.card)
-  assignees?: Assignee[];
+  // @OneToMany(() => Assignee, (assignee) => assignee.card)
+  // assignees?: Assignee[];
 }
