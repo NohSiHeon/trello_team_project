@@ -14,12 +14,14 @@ import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UserInfo } from 'src/util/user-info.decorator';
+import { User } from 'src/user/entities/user.entity';
 //import { assignmentDto } from './dto/assignment.dto';
 
 @ApiTags('boards')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @Controller('board')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
@@ -80,13 +82,12 @@ export class BoardController {
    */
   @Patch(':boardId')
   update(
-    @Request() req,
+    @UserInfo() user: User,
     @Param('boardId') boardId: number,
     @Body() updateBoardDto: UpdateBoardDto,
   ) {
-    const adminId = req.user.id;
-    console.log(adminId);
-    return this.boardService.update(+adminId, +boardId, updateBoardDto);
+    console.log(user);
+    return this.boardService.update(user, +boardId, updateBoardDto);
   }
 
   /**

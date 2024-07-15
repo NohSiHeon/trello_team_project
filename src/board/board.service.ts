@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
 import { Repository } from 'typeorm';
 import { Member } from './entities/member.entity';
+import { User } from 'src/user/entities/user.entity';
 //import { assignmentDto } from './dto/assignment.dto';
 
 @Injectable()
@@ -42,18 +43,15 @@ export class BoardService {
     return `This action returns a #${id} board`;
   }
 
-  async update(
-    adminId: number,
-    boardId: number,
-    updateBoardDto: UpdateBoardDto,
-  ) {
+  async update(user: User, boardId: number, updateBoardDto: UpdateBoardDto) {
+    const userId = user.id;
     const existedBoard = await this.boardRepository.findOne({
       where: { id: +boardId },
     });
     if (!existedBoard) {
       throw new NotFoundException('보드 정보가 없습니다');
     }
-    if (existedBoard.adminId != adminId) {
+    if (existedBoard.adminId != userId) {
       throw new UnauthorizedException('해당 보드에 수정 권한이 없습니다.');
     }
     const updateUser = await this.boardRepository.update(
