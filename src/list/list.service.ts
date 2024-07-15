@@ -13,6 +13,7 @@ import { ListOrder } from './entities/listOrder.entity';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Member } from 'src/board/entities/member.entity';
 import { User } from 'src/user/entities/user.entity';
+import { FindListDto } from './dto/find-list.dto';
 
 @Injectable()
 export class ListService {
@@ -56,8 +57,9 @@ export class ListService {
 
   //리스트 생성
 
-  async createList(id: number, user: User, createListDto: CreateListDto) {
-    await this.isMember(id, user.id);
+  async createList(user: User , createListDto: CreateListDto) {
+
+    await this.isMember(createListDto.boardId, user.id);
 
     const existList = await this.listRepository.findOne({
       where: { title: createListDto.title },
@@ -69,18 +71,19 @@ export class ListService {
 
     //트랜잭션 ( 리스트 추가, 리스트 오더 배열 추가)
     return await this.entityManager.transaction(async (manager) => {
-      const createNewList = await manager.save(List, {
-        boardId: id,
+
+      const createNewList = await manager.save(List,{
+        boardId: createListDto.boardId,
         title: createListDto.title,
       });
 
       let listOrder = await manager.findOne(ListOrder, {
-        where: { boardId: id },
+        where: { boardId: createListDto.boardId },
       });
 
       if (!listOrder) {
         await manager.save(ListOrder, {
-          boardId: id,
+          boardId: createListDto.boardId,
           listOrder: [createNewList.listId],
         });
       } else {
@@ -127,12 +130,14 @@ export class ListService {
 
   //리스트 조회
 
-  async findAllList(id: number, user: User) {
-    await this.isMember(id, user.id);
+  async findAllList(user: User, findListDto: FindListDto) {
+
+    await this.isMember(findListDto.boardId, user.id);
+    console.log(findListDto.boardId);
 
     const listOrder = await this.listOrderRepository.findOne({
-      where: { boardId: id },
-    });
+      where: {boardId: findListDto.boardId},
+    })
 
     const orderId = listOrder.listOrder;
 
@@ -140,8 +145,8 @@ export class ListService {
       `select a.title
       from lists a join list_orders b
       on a.board_id = b.order_id 
-      where a.board_id = ${id}
-      order by FIELD(a.list_id , ${orderId.join(',')})`,
+      where a.board_id = ${findListDto.boardId}
+      order by FIELD(a.list_id , ${orderId.join(',')})`
     );
 
     return findList;
@@ -149,15 +154,12 @@ export class ListService {
 
   //리스트 순서 이동
 
-  async updateListOrder(
-    id: number,
-    user: User,
-    updateOrderDto: UpdateOrderDto,
-  ) {
-    await this.isMember(id, user.id);
+  async updateListOrder(user: User ,updateOrderDto: UpdateOrderDto) {
+
+    await this.isMember(updateOrderDto.boardId, user.id);
 
     let listOrder = await this.listOrderRepository.findOne({
-      where: { boardId: id },
+      where: {boardId: updateOrderDto.boardId}
     });
 
     const listIndex = listOrder.listOrder.indexOf(updateOrderDto.listId);
