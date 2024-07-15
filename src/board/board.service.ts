@@ -12,6 +12,8 @@ import { Repository } from 'typeorm';
 import { Member } from './entities/member.entity';
 import { User } from 'src/user/entities/user.entity';
 import { assignmentDto } from './dto/assignment.dto';
+import { Card } from 'src/card/entities/card.entity';
+import { List } from 'src/list/entities/list.entity';
 
 @Injectable()
 export class BoardService {
@@ -19,11 +21,17 @@ export class BoardService {
     @InjectRepository(Board) private boardRepository: Repository<Board>,
     @InjectRepository(Member) private memberRepository: Repository<Member>,
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(List) private listRepository: Repository<List>,
+    @InjectRepository(Card) private cardRepository: Repository<Card>,
   ) {}
   async create(userId: number, boardTitle: string) {
     const data = await this.boardRepository.save({
       adminId: userId,
       title: boardTitle,
+    });
+    await this.memberRepository.save({
+      boardId: data.id,
+      userId: userId,
     });
     return {
       statusCode: HttpStatus.CREATED,
@@ -49,8 +57,15 @@ export class BoardService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} board`;
+  async findOne(boardId: number) {
+    const allListsInBoard = await this.listRepository.findBy({
+      boardId: boardId,
+    });
+    return {
+      statusCode: HttpStatus.OK,
+      message: '보드 상세 조회에 성공했습니다.',
+      data: allListsInBoard,
+    };
   }
 
   async update(user: User, boardId: number, updateBoardDto: UpdateBoardDto) {
