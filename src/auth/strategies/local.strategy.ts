@@ -19,6 +19,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new NotFoundException(MESSAGES.AUTH.COMMON.NOT_FOUND);
     }
 
-    return user.id;
+    return { id: user.id };
   }
 }
