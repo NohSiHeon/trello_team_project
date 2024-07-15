@@ -23,11 +23,8 @@ export class CommentController {
    * @param createCommentDto
    * @returns
    */
-  @Post('/cards/comments') //:cardid 추가
-  async create(
-    // @Param('cardId') cardId: string, < 합치고 추가
-    @Body() createCommentDto: CreateCommentDto,
-  ) {
+  @Post()
+  async create(@Body() createCommentDto: CreateCommentDto) {
     const data = await this.commentService.create(createCommentDto); //+cardId 합치고 추가
     return {
       status: HttpStatus.CREATED,

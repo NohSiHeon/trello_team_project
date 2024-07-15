@@ -14,10 +14,9 @@ export class CommentService {
 
   // 댓글 생성
   async create(createCommentDto: CreateCommentDto) {
-    //cardId: number, 합치고 추가
-    //카드 존재 확인 코드
+    // 카드 존재 확인 코드
     // const card = await this.commentRepository.findOne({
-    //   where: { card: { id: cardId } },
+    //   where: { card: { id: createCommentDto.cardId } },
     //   relations: ['card'],
     // });
     // if (!card) {

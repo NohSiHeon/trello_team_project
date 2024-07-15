@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 import {
   Column,
@@ -13,6 +13,15 @@ import {
 export class Comment {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
+
+  /**
+   * 카드 id
+   * @example "1"
+   */
+  @IsNotEmpty({ message: 'cardId를 입력해주세요' })
+  @IsNumber()
+  @Column()
+  cardId: number;
 
   /**
    * 댓글 내용
