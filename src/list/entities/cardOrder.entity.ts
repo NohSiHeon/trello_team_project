@@ -1,6 +1,14 @@
 import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 import {
-  Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { List } from './list.entity';
 
@@ -8,7 +16,7 @@ import { List } from './list.entity';
   name: 'card_orders',
 })
 export class CardOrder {
-  @PrimaryGeneratedColumn({name: 'order_id'})
+  @PrimaryGeneratedColumn({ name: 'order_id' })
   orderId: number;
 
   @OneToOne(() => List, (list) => list.cardOrder)

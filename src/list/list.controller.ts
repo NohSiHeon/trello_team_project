@@ -1,11 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ListService } from './list.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/util/user-info.decorator';
-
 
 @Controller('')
 export class ListController {
@@ -15,7 +23,11 @@ export class ListController {
 
   @Post('boards/:id/lists')
   @UseGuards(JwtAuthGuard)
-  async createList(@Param('id') id: string, @UserInfo() user: User, @Body() createListDto: CreateListDto) {
+  async createList(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Body() createListDto: CreateListDto,
+  ) {
     return await this.listService.createList(+id, user, createListDto);
   }
 
@@ -31,7 +43,11 @@ export class ListController {
 
   @Patch('boards/:id/listOrder')
   @UseGuards(JwtAuthGuard)
-  async updateListOrder(@Param('id') id: string, @UserInfo() user: User, @Body() updateOrderDto: UpdateOrderDto) {
+  async updateListOrder(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
     return await this.listService.updateListOrder(+id, user, updateOrderDto);
   }
 
@@ -39,7 +55,11 @@ export class ListController {
 
   @Patch('lists/:id')
   @UseGuards(JwtAuthGuard)
-  async updateList(@Param('id') id: string, @UserInfo() user: User, @Body() createListDto: CreateListDto) {
+  async updateList(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Body() createListDto: CreateListDto,
+  ) {
     return await this.listService.updateList(+id, user, createListDto);
   }
 
