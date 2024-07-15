@@ -35,6 +35,7 @@ export class BoardController {
   @Post()
   async create(@Request() req, @Body() createBoardDto: CreateBoardDto) {
     const userId = req.user.id;
+    console.log(userId);
     const boardTitle = createBoardDto.title;
 
     const data = await this.boardService.create(userId, boardTitle);
@@ -82,8 +83,8 @@ export class BoardController {
    */
   @Patch(':boardId')
   update(
-    @UserInfo() user: User,
     @Param('boardId') boardId: number,
+    @UserInfo() user: User,
     @Body() updateBoardDto: UpdateBoardDto,
   ) {
     console.log(user);

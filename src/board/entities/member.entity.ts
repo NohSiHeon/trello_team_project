@@ -1,6 +1,6 @@
-import { Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Entity, PrimaryColumn } from 'typeorm';
 import { IsNumber } from 'class-validator';
-import { Assignee } from 'src/assignee/entities/assignee.entity';
+//import { Assignee } from 'src/assignee/entities/assignee.entity';
 
 @Entity('members')
 export class Member {
