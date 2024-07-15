@@ -23,6 +23,7 @@ export const MESSAGES = {
       },
       PHONE_NUMBER: {
         REQUIRED: '전화번호를 입력해 주세요.',
+        INVALID_FORMAT: '전화번호 형식(000-000-000)에 맞게 입력해주세요. ',
       },
       DUPLICATED: '이미 가입된 사용자 입니다.',
       UNAUTHORIZED: '인증 정보가 유효하지 않습니다.',
@@ -54,6 +55,7 @@ export const MESSAGES = {
     UPDATE_ME: {
       SUCCEED: '내 정보 수정에 성공했습니다.',
       NO_BODY_DATA: '수정할 데이터를 입력해주세요',
+      DUPLICATED_EMAIL: '현재와 동일한 이메일입니다.',
     },
     DELETE_ACCOUNT: {
       SUCCEED: '회원 탈퇴에 성공했습니다.',
