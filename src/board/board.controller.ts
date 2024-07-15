@@ -8,18 +8,28 @@ import {
   Delete,
   UseGuards,
   Request,
+  HttpStatus,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 //import { assignmentDto } from './dto/assignment.dto';
 
+@ApiTags('boards')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('board')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  /**
+   * 보드 생성
+   * @param req
+   * @param createBoardDto
+   * @returns
+   */
   @Post()
   async create(@Request() req, @Body() createBoardDto: CreateBoardDto) {
     const userId = req.user.id;
@@ -27,34 +37,59 @@ export class BoardController {
 
     const data = await this.boardService.create(userId, boardTitle);
 
-    return data;
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '보드 생성에 성공했습니다',
+      data: data,
+    };
   }
-
-  @UseGuards(AuthGuard('jwt'))
+  /**
+   * 보드 목록 조회
+   * @param req
+   * @returns
+   */
   @Get()
   async findAll(@Request() req) {
     const userId = req.user.id;
     const data = await this.boardService.findAll(userId);
 
-    return data;
+    return {
+      statusCode: HttpStatus.OK,
+      message: '보드 목록 조회에 성공했습니다.',
+      data: data,
+    };
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  /**
+   * 보드 상세 조회
+   * @param req
+   * @param id
+   * @returns
+   */
   @Get(':boardId')
   findOne(@Request() req, @Param('id') id: number) {
     return this.boardService.findOne(+id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Patch(':id')
+  /**
+   * 보드 수정
+   * @param boardId
+   * @param updateBoardDto
+   * @returns
+   */
+  @Patch(':boardId')
   update(@Param('id') boardId: number, @Body() updateBoardDto: UpdateBoardDto) {
     return this.boardService.update(+boardId, updateBoardDto);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.boardService.remove(+id);
+  /**
+   * 보드 삭제
+   * @param boardId
+   * @returns
+   */
+  @Delete(':boardId')
+  remove(@Param('id') boardId: number) {
+    return this.boardService.remove(+boardId);
   }
   /*
   @UseGuards(AuthGuard('jwt'))
