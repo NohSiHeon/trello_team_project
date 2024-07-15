@@ -1,5 +1,5 @@
+import { Member } from 'src/board/entities/member.entity';
 import { Card } from 'src/card/entities/card.entity';
-import { Member } from 'src/member/entities/member.entity';
 import { Entity, ManyToOne, PrimaryColumn, Unique } from 'typeorm';
 
 @Unique(['cardId', 'userId'])
@@ -11,9 +11,9 @@ export class Assignee {
   @PrimaryColumn()
   userId: number;
 
-  @ManyToOne((type) => Card, (card) => card.assignees, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Card, (card) => card.assignees, { onDelete: 'CASCADE' })
   card?: Card;
 
-  @ManyToOne((type) => Member, (member) => member.assignee)
+  @ManyToOne(() => Member, (member) => member.assignee)
   members: Member[];
 }

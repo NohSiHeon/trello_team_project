@@ -46,6 +46,6 @@ export class Card {
   // @OneToMany((type) => Comment, (comment) => comment.card)
   // comments: Comment[];
 
-  @OneToMany((type) => Assignee, (assignee) => assignee.card)
+  @OneToMany(() => Assignee, (assignee) => assignee.card)
   assignees?: Assignee[];
 }
