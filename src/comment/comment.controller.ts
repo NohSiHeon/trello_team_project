@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -65,6 +66,17 @@ export class CommentController {
       message: '댓글 수정에 성공하였습니다.',
       data,
     };
+  }
+
+  /**
+   * 댓글 전체 조회 api
+   * @param cardId
+   * @returns
+   */
+  @Get()
+  async findAll(@Query('cardId') cardId: number) {
+    const data = await this.commentService.findAll(cardId);
+    return data;
   }
 
   /**

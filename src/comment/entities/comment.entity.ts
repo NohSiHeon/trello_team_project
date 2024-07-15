@@ -1,9 +1,11 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Card } from 'src/card/entities/card.entity';
 
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -13,15 +15,6 @@ import {
 export class Comment {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
-
-  /**
-   * 카드 id
-   * @example "1"
-   */
-  @IsNotEmpty({ message: 'cardId를 입력해주세요' })
-  @IsNumber()
-  @Column()
-  cardId: number;
 
   /**
    * 댓글 내용
@@ -38,10 +31,10 @@ export class Comment {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // @ManyToOne((type): typeof Card => Card, (card) => card.comments, {
-  //   onDelete: 'CASCADE',
-  // })
-  // card: Card;
+  @ManyToOne((type): typeof Card => Card, (card) => card.comments, {
+    onDelete: 'CASCADE',
+  })
+  card: Card;
 
   // @ManyToOne((type): typeof Merber => Merber, (merber) => merber.comments, {
   //   onDelete: 'CASCADE',
