@@ -44,4 +44,26 @@ export const MESSAGES = {
       SECCEED: '로그인에 성공했습니다.',
     },
   },
+  USERS: {
+    COMMON: {
+      NOT_FOUND: '해당하는 사용자를 찾을 수 없습니다.',
+    },
+    READ_ME: {
+      SUCCEED: '내 정보 조회에 성공했습니다.',
+    },
+    UPDATE_ME: {
+      SUCCEED: '내 정보 수정에 성공했습니다.',
+      NO_BODY_DATA: '수정할 데이터를 입력해주세요',
+    },
+    DELETE_ACCOUNT: {
+      SUCCEED: '회원 탈퇴에 성공했습니다.',
+      FAIL: '회원 탈퇴에 실패했습니다.',
+      ALREADY_DELETED: '이미 탈퇴한 회원입니다.',
+    },
+    CHECK_EMAIL_REGISTRATION: {
+      REGISTERED: '이 이메일은 이미 등록된 상태입니다.',
+      NOT_REGISTERED: '이 이메일은 등록되지 않은 상태입니다.',
+      DEACTIVATED: '이 이메일은 탈퇴한 상태입니다.',
+    },
+  },
 };
