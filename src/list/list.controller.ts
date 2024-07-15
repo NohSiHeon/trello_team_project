@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ListService } from './list.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -8,8 +17,12 @@ import { UserInfo } from 'src/util/user-info.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { FindListDto } from './dto/find-list.dto';
 
+<<<<<<< HEAD
 @ApiTags('list')
 @Controller('lists')
+=======
+@Controller('')
+>>>>>>> dev
 export class ListController {
   constructor(private readonly listService: ListService) {}
 
@@ -20,8 +33,17 @@ export class ListController {
    */
   @Post('')
   @UseGuards(JwtAuthGuard)
+<<<<<<< HEAD
   async createList(@UserInfo() user: User, @Body() createListDto: CreateListDto) {
     return await this.listService.createList(user, createListDto);
+=======
+  async createList(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Body() createListDto: CreateListDto,
+  ) {
+    return await this.listService.createList(+id, user, createListDto);
+>>>>>>> dev
   }
 
   /**
@@ -42,8 +64,17 @@ export class ListController {
    */
   @Patch('listOrders')
   @UseGuards(JwtAuthGuard)
+<<<<<<< HEAD
   async updateListOrder(@UserInfo() user: User, @Body() updateOrderDto: UpdateOrderDto) {
     return await this.listService.updateListOrder(user, updateOrderDto);
+=======
+  async updateListOrder(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
+    return await this.listService.updateListOrder(+id, user, updateOrderDto);
+>>>>>>> dev
   }
 
   /**
@@ -53,7 +84,11 @@ export class ListController {
    */
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  async updateList(@Param('id') id: string, @UserInfo() user: User, @Body() createListDto: CreateListDto) {
+  async updateList(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Body() createListDto: CreateListDto,
+  ) {
     return await this.listService.updateList(+id, user, createListDto);
   }
 

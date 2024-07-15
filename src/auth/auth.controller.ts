@@ -14,6 +14,7 @@ import { UserInfo } from 'src/util/user-info.decorator';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { SignInDto } from './dto/sign-in.dto';
+import { User } from 'src/user/entities/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -43,8 +44,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   @Post('sign-in')
-  async SignIn(@UserInfo() userId: number, @Body() signInDto: SignInDto) {
-    const data = await this.authService.signIn(userId);
+  async SignIn(@UserInfo() user: User, @Body() signInDto: SignInDto) {
+    const data = await this.authService.signIn(user.id);
     return createResponse(
       HttpStatus.ACCEPTED,
       MESSAGES.AUTH.SIGN_IN.SECCEED,

@@ -21,7 +21,7 @@ import { JwtModule } from '@nestjs/jwt';
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([List, Board, ListOrder, CardOrder, Member]),
-    AuthModule
+    AuthModule,
   ],
   providers: [ListService],
   controllers: [ListController],
