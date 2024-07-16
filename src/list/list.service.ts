@@ -9,12 +9,9 @@ import { List } from './entities/list.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager, QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { ListOrder } from './entities/listOrder.entity';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
 import { User } from 'src/user/entities/user.entity';
-import { FindListDto } from './dto/find-list.dto';
-import { Member } from 'src/member/entites/member.entity';
 import { LexoRank } from 'lexorank';
 
 @Injectable()
@@ -22,11 +19,6 @@ export class ListService {
   constructor(
     @InjectRepository(List)
     private listRepository: Repository<List>,
-    @InjectRepository(ListOrder)
-    private listOrderRepository: Repository<ListOrder>,
-    @InjectRepository(Member)
-    private memberRepository: Repository<Member>,
-    private entityManager: EntityManager,
     private readonly jwtService: JwtService,
   ) {}
 
