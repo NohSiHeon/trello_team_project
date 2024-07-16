@@ -126,7 +126,7 @@ export class ListService {
       from lists a join list_orders b
       on a.board_id = b.order_id 
       where a.board_id = ${findListDto.boardId}
-      order by FIELD(a.list_id , ${orderId.join(',')})`,
+      order by rank asc)`,
     );
 
     return findList;
