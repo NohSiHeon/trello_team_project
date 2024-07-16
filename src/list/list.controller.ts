@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ListService } from './list.service';
 import { CreateListDto } from './dto/create-list.dto';
@@ -16,7 +17,10 @@ import { User } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/util/user-info.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { FindListDto } from './dto/find-list.dto';
+import { MemberGuard } from 'src/auth/guards/member-auth.guard';
 
+@UseGuards(JwtAuthGuard)
+@UseGuards(MemberGuard)
 @ApiTags('list')
 @Controller('lists')
 export class ListController {
@@ -28,7 +32,6 @@ export class ListController {
    * @returns
    */
   @Post('')
-  @UseGuards(JwtAuthGuard)
   async createList(
     @UserInfo() user: User,
     @Body() createListDto: CreateListDto,
@@ -42,8 +45,7 @@ export class ListController {
    * @returns
    */
   @Get('')
-  @UseGuards(JwtAuthGuard)
-  async findAllList(@UserInfo() user: User, @Body() findListDto: FindListDto) {
+  async findAllList(@UserInfo() user: User, @Query() findListDto: FindListDto) {
     return this.listService.findAllList(user, findListDto);
   }
 
@@ -53,7 +55,6 @@ export class ListController {
    * @returns
    */
   @Patch('listOrders')
-  @UseGuards(JwtAuthGuard)
   async updateListOrder(
     @UserInfo() user: User,
     @Body() updateOrderDto: UpdateOrderDto,
@@ -67,7 +68,6 @@ export class ListController {
    * @returns
    */
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   async updateList(
     @Param('id') id: string,
     @UserInfo() user: User,
@@ -81,7 +81,6 @@ export class ListController {
    * @returns
    */
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   async removeList(@Param('id') id: string, @UserInfo() user: User) {
     return await this.listService.removeList(+id, user);
   }
