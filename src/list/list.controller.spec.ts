@@ -3,7 +3,6 @@ import { ListController } from './list.controller';
 import { ListService } from './list.service';
 import { User } from 'src/user/entities/user.entity';
 import { CreateListDto } from './dto/create-list.dto';
-import { List } from './entities/list.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FindListDto } from './dto/find-list.dto';
 
@@ -41,7 +40,7 @@ describe('ListController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('CreateList test', () => {
+  describe('createList test', () => {
     it('should create a list', async () => {
       const user: User = { id: 1 } as User;
       const createListDto: CreateListDto = { boardId: 1, title: 'Test List' };
@@ -70,7 +69,7 @@ describe('ListController', () => {
       const user: User = { id: 1 } as User;
       const findListDto: FindListDto = { boardId: 1 };
       const result= {
-        title: 'Done',
+        title: 'Test List',
       };
 
       jest.spyOn(service, 'findAllList').mockResolvedValue(result);
