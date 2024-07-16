@@ -12,6 +12,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { Member } from 'src/member/entites/member.entity';
+import { MemberModule } from 'src/member/member.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Member } from 'src/member/entites/member.entity';
     }),
     TypeOrmModule.forFeature([List, Board, ListOrder, CardOrder, Member]),
     AuthModule,
+    MemberModule
   ],
   providers: [ListService],
   controllers: [ListController],
