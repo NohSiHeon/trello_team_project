@@ -1,5 +1,6 @@
 import { IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Card } from 'src/card/entities/card.entity';
+import { Member } from 'src/member/entites/member.entity';
 
 import {
   Column,
@@ -36,8 +37,8 @@ export class Comment {
   })
   card: Card;
 
-  // @ManyToOne((type): typeof Merber => Merber, (merber) => merber.comments, {
-  //   onDelete: 'CASCADE',
-  // })
-  // merber: Merber;
+  @ManyToOne((type): typeof Member => Member, (member) => member.comments, {
+    onDelete: 'CASCADE',
+  })
+  member: Member;
 }
