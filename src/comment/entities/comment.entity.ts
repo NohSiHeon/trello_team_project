@@ -31,10 +31,10 @@ export class Comment {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne((type): typeof Card => Card, (card) => card.comments, {
-    onDelete: 'CASCADE',
-  })
-  card: Card;
+  // @ManyToOne((type): typeof Card => Card, (card) => card.comments, {
+  //   onDelete: 'CASCADE',
+  // })
+  // card: Card;
 
   // @ManyToOne((type): typeof User => User, (user) => user.comments, {
   //   onDelete: 'CASCADE',
