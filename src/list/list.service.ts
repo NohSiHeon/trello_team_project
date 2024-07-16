@@ -39,27 +39,9 @@ export class ListService {
     return existList;
   }
 
-  //멤버 확인
-
-  async isMember(boardId: number, userId: number) {
-    const isMember = await this.memberRepository.findOne({
-      where: {
-        boardId: boardId,
-        userId: userId,
-      },
-    });
-
-    if (!isMember) {
-      throw new UnauthorizedException('보드의 멤버가 아닙니다.');
-    } else {
-      return isMember;
-    }
-  }
-
   //리스트 생성
 
   async createList(user: User, createListDto: CreateListDto) {
-    await this.isMember(createListDto.boardId, user.id);
 
     const existList = await this.listRepository.findOne({
       where: { title: createListDto.title },
@@ -97,7 +79,6 @@ export class ListService {
   //리스트 이름 수정
 
   async updateList(id: number, user: User, createListDto: CreateListDto) {
-    await this.isMember(id, user.id);
 
     const existList = await this.existList(id);
     if (!existList) {
@@ -115,7 +96,6 @@ export class ListService {
   //리스트 삭제
 
   async removeList(id: number, user: User) {
-    await this.isMember(id, user.id);
 
     const existList = await this.existList(id);
     if (!existList) {
@@ -130,8 +110,6 @@ export class ListService {
   //리스트 조회
 
   async findAllList(user: User, findListDto: FindListDto) {
-    await this.isMember(findListDto.boardId, user.id);
-    console.log(findListDto.boardId);
 
     const listOrder = await this.listOrderRepository.findOne({
       where: { boardId: findListDto.boardId },
@@ -153,7 +131,6 @@ export class ListService {
   //리스트 순서 이동
 
   async updateListOrder(user: User, updateOrderDto: UpdateOrderDto) {
-    await this.isMember(updateOrderDto.boardId, user.id);
 
     const listOrder = await this.listOrderRepository.findOne({
       where: { boardId: updateOrderDto.boardId },
