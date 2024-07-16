@@ -36,8 +36,8 @@ export class Comment {
   })
   card: Card;
 
-  // @ManyToOne((type): typeof Merber => Merber, (merber) => merber.comments, {
+  // @ManyToOne((type): typeof User => User, (user) => user.comments, {
   //   onDelete: 'CASCADE',
   // })
-  // merber: Merber;
+  // user: User;
 }
