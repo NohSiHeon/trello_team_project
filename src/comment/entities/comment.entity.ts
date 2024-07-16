@@ -6,7 +6,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -32,17 +31,6 @@ export class Comment {
   @UpdateDateColumn()
   updatedAt: Date;
 
-<<<<<<< HEAD
-  // @ManyToOne((type): typeof Card => Card, (card) => card.comments, {
-  //   onDelete: 'CASCADE',
-  // })
-  // card: Card;
-
-  // @ManyToOne((type): typeof User => User, (user) => user.comments, {
-  //   onDelete: 'CASCADE',
-  // })
-  // user: User;
-=======
   @ManyToOne((type): typeof Card => Card, (card) => card.comments, {
     onDelete: 'CASCADE',
   })
@@ -52,5 +40,4 @@ export class Comment {
     onDelete: 'CASCADE',
   })
   member: Member;
->>>>>>> dd66f62abe0768f289b15ceaa93a9b7e235910ed
 }
