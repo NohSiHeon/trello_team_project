@@ -74,9 +74,13 @@ export class CommentController {
    * @returns
    */
   @Get()
-  async findAll(@Query('cardId') cardId: number) {
-    const data = await this.commentService.findAll(cardId);
-    return data;
+  async findAll(@Query('card_id') card_id: number) {
+    const data = await this.commentService.findAll(card_id);
+    return {
+      status: HttpStatus.OK,
+      message: '댓글 전체 조회에 성공하였습니다',
+      data,
+    };
   }
 
   /**
