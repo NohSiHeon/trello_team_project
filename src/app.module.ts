@@ -23,6 +23,7 @@ import { MemberModule } from './member/member.module';
     BoardModule,
     AuthModule,
     UserModule,
+    BoardModule,
     CardModule,
     MemberModule,
   ],

@@ -41,8 +41,8 @@ export class Board {
    * @example "red"
    */
   @IsEnum(BackgroundColorTypes)
-  @Column({ type: 'enum', enum: BackgroundColorTypes })
-  backgroundColor: BackgroundColorTypes;
+  @Column({ type: 'enum', enum: BackgroundColorTypes, default: 'Red' })
+  backgroundColor: BackgroundColorTypes | null;
 
   @CreateDateColumn()
   createdAt: Date;
