@@ -25,6 +25,7 @@ import { AssigneeModule } from './assignee/assignee.module';
     BoardModule,
     AuthModule,
     UserModule,
+    BoardModule,
     CardModule,
     AssigneeModule,
   ],

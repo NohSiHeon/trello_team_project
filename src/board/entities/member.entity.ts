@@ -1,6 +1,6 @@
-import { Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Entity, PrimaryColumn } from 'typeorm';
 import { IsNumber } from 'class-validator';
-import { Assignee } from 'src/assignee/entities/assignee.entity';
+//import { Assignee } from 'src/assignee/entities/assignee.entity';
 
 @Entity('members')
 export class Member {
@@ -17,7 +17,7 @@ export class Member {
    * @example 1
    */
   @IsNumber()
-  @PrimaryColumn({ name: 'user_id', unsigned: true })
+  @PrimaryColumn({ unsigned: true })
   userId: number;
 
   // @OneToMany(() => Assignee, (assignee) => assignee.member)
