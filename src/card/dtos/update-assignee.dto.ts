@@ -1,7 +1,11 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class UpdateAssigneeDto {
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  assignee: string;
+  userId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  boardId: number;
 }

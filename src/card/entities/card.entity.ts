@@ -2,13 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CardColor } from '../types/card-color.type';
-import { Assignee } from 'src/assignee/entities/assignee.entity';
+import { Assignee } from 'src/card/entities/assignee.entity';
 import { List } from 'src/list/entities/list.entity';
 
 @Entity('cards')
@@ -16,7 +17,7 @@ export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unsigned: true })
+  @Column({ name: 'list_id', unsigned: true, type: 'int' })
   listId: number;
 
   @Column()
@@ -43,11 +44,12 @@ export class Card {
   updatedAt: Date;
 
   @ManyToOne(() => List, (list) => list.cards, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'list_id', referencedColumnName: 'listId' })
   list: List;
 
   // @OneToMany(() => Comment, (comment) => comment.card)
   // comments: Comment[];
 
-  // @OneToMany(() => Assignee, (assignee) => assignee.card)
-  // assignees?: Assignee[];
+  @OneToMany(() => Assignee, (assignee) => assignee.card)
+  assignees?: Assignee[];
 }

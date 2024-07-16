@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { Card } from './entities/card.entity';
 import { Repository } from 'typeorm';
@@ -6,6 +6,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ApiResponse } from './interfaces/api-response';
 import { UpdateCardDto } from './dtos/update-card.dto';
 import { List } from 'src/list/entities/list.entity';
+import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
+import { Member } from 'src/member/entites/member.entity';
+import { Assignee } from 'src/card/entities/assignee.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class CardService {
@@ -14,6 +18,12 @@ export class CardService {
     private cardRepository: Repository<Card>,
     @InjectRepository(List)
     private listRepository: Repository<List>,
+    @InjectRepository(Member)
+    private memberRepository: Repository<Member>,
+    @InjectRepository(Assignee)
+    private assigneeRepository: Repository<Assignee>,
+    // @InjectRepository(User)
+    // private userRepository: Repository<User>,
   ) {}
 
   /**
@@ -192,6 +202,86 @@ export class CardService {
       message: '카드 수정에 성공했습니다.',
       data: updatedCard,
     };
+    return response;
+  }
+  /**
+   * 작업자 수정/할당
+   * @param cardId
+   * @param updateAssigneeDto
+   * @returns
+   */
+  async updateAssignee(cardId: number, updateAssigneeDto: UpdateAssigneeDto) {
+    const { userId, boardId } = updateAssigneeDto;
+
+    // 멤버 조회
+    const member = await this.memberRepository.findOne({
+      where: {
+        userId,
+        boardId,
+      },
+    });
+
+    // 멤버가 아닐경우 예외 처리
+    if (!member) {
+      throw new NotFoundException('없어');
+    }
+
+    // id가 cardId와 일치한 카드 가져오기
+    const card = await this.checkCardById(cardId);
+
+    // 카드 없을 때 예외 처리
+    if (!card) {
+      const errorResponse: ApiResponse<Card> = {
+        statusCode: HttpStatus.NOT_FOUND,
+        message: '존재하지 않는 카드입니다.',
+        error: 'Not Found',
+      };
+      return errorResponse;
+    }
+
+    // 멤버의 memberId 값
+    const memberId = member.memberId;
+
+    // 작업자 할당
+    await this.assigneeRepository.save({ cardId, memberId });
+
+    // 카드의 id가 cardId인 카드와 assignees 값 조회하기
+    const updatedCard = await this.cardRepository.findOne({
+      where: { id: cardId },
+      relations: ['assignees'],
+    });
+
+    // 가져온 카드에 포함인 assignee
+    const assignees = updatedCard.assignees;
+
+    // 빈 배열 생성
+    const userArray = [];
+
+    // assignees 순회
+    for (let assignee of assignees) {
+      // member에 memberId가 assignee의 memberId인 멤버와 user 조회하기
+      const member = this.memberRepository.findOne({
+        where: {
+          memberId: assignee.memberId,
+        },
+        relations: ['user'],
+      });
+      // 배열에 assginees를 순회해서 나온 user의 nickname을 name key로 추가
+      userArray.push({ name: (await member).user.nickname });
+    }
+
+    // assignees key에 userArray를 value로 할당
+    const data = {
+      ...updatedCard,
+      assignees: userArray,
+    };
+
+    const response = {
+      statusCode: HttpStatus.OK,
+      message: '작업자 수정/할당에 성공했습니다.',
+      data: data,
+    };
+
     return response;
   }
 

@@ -18,7 +18,7 @@ import { Card } from 'src/card/entities/card.entity';
   name: 'lists',
 })
 export class List {
-  @PrimaryGeneratedColumn({ name: 'list_id' })
+  @PrimaryGeneratedColumn({ name: 'list_id', unsigned: true, type: 'int' })
   listId: number;
 
   @ManyToOne(() => Board, (board) => board.list)

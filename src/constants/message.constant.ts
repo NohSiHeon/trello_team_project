@@ -66,4 +66,9 @@ export const MESSAGES = {
       DEACTIVATED: '이 이메일은 탈퇴한 상태입니다.',
     },
   },
+  BOARD: {
+    COMMON: {
+      NOT_MEMBER: '보드에 추가된 유저가 아닙니다.',
+    },
+  },
 };

@@ -11,8 +11,9 @@ import { Repository, EntityManager, QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ListOrder } from './entities/listOrder.entity';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { Member } from 'src/board/entities/member.entity';
+
 import { User } from 'src/user/entities/user.entity';
+import { Member } from 'src/member/entites/member.entity';
 
 @Injectable()
 export class ListService {
