@@ -11,6 +11,7 @@ import { IsNumber } from 'class-validator';
 import { Assignee } from 'src/card/entities/assignee.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Board } from 'src/board/entities/board.entity';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 @Index(['boardId', 'userId'], { unique: true })
 @Entity('members')
@@ -42,4 +43,7 @@ export class Member {
 
   @ManyToOne(() => Board, (board) => board.members)
   board: Board;
+
+  @OneToMany(() => Comment, (comment) => comment.member)
+  comments: Comment[];
 }

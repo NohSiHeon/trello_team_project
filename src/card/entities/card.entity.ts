@@ -11,6 +11,7 @@ import {
 import { CardColor } from '../types/card-color.type';
 import { Assignee } from 'src/card/entities/assignee.entity';
 import { List } from 'src/list/entities/list.entity';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 @Entity('cards')
 export class Card {
@@ -47,8 +48,8 @@ export class Card {
   @JoinColumn({ name: 'list_id', referencedColumnName: 'listId' })
   list: List;
 
-  // @OneToMany(() => Comment, (comment) => comment.card)
-  // comments: Comment[];
+  @OneToMany(() => Comment, (comment) => comment.card)
+  comments: Comment[];
 
   @OneToMany(() => Assignee, (assignee) => assignee.card)
   assignees?: Assignee[];
