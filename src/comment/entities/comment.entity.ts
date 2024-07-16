@@ -1,5 +1,6 @@
 import { IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Card } from 'src/card/entities/card.entity';
+import { Member } from 'src/member/entites/member.entity';
 
 import {
   Column,
@@ -31,6 +32,7 @@ export class Comment {
   @UpdateDateColumn()
   updatedAt: Date;
 
+<<<<<<< HEAD
   // @ManyToOne((type): typeof Card => Card, (card) => card.comments, {
   //   onDelete: 'CASCADE',
   // })
@@ -40,4 +42,15 @@ export class Comment {
   //   onDelete: 'CASCADE',
   // })
   // user: User;
+=======
+  @ManyToOne((type): typeof Card => Card, (card) => card.comments, {
+    onDelete: 'CASCADE',
+  })
+  card: Card;
+
+  @ManyToOne((type): typeof Member => Member, (member) => member.comments, {
+    onDelete: 'CASCADE',
+  })
+  member: Member;
+>>>>>>> dd66f62abe0768f289b15ceaa93a9b7e235910ed
 }

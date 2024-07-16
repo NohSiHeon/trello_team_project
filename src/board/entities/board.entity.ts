@@ -11,6 +11,7 @@ import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { BackgroundColorTypes } from '../types/backgroud-color.types';
 import { List } from 'src/list/entities/list.entity';
 import { ListOrder } from 'src/list/entities/listOrder.entity';
+import { Member } from 'src/member/entites/member.entity';
 
 //swagger 사용 고려한 주석
 @Entity('boards')
@@ -54,4 +55,7 @@ export class Board {
 
   @OneToOne(() => ListOrder, (listOrder) => listOrder.board, { cascade: true })
   listOrder: ListOrder;
+
+  @OneToMany(() => Member, (member) => member.board)
+  members: Member[];
 }

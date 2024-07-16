@@ -7,10 +7,11 @@ import { List } from './entities/list.entity';
 import { Board } from 'src/board/entities/board.entity';
 import { ListOrder } from './entities/listOrder.entity';
 import { CardOrder } from './entities/cardOrder.entity';
-import { Member } from 'src/board/entities/member.entity';
+
 import { AuthModule } from 'src/auth/auth.module';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { Member } from 'src/member/entites/member.entity';
 
 @Module({
   imports: [

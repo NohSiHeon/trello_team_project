@@ -14,8 +14,12 @@ import { ApiResponse } from './interfaces/api-response';
 import { CardService } from './card.service';
 import { UpdateCardDto } from './dtos/update-card.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
+import { MemberGuard } from 'src/auth/guards/member-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 // import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
 
+@ApiTags('cards')
 @UseGuards(JwtAuthGuard)
 @Controller('cards')
 export class CardController {
@@ -82,6 +86,12 @@ export class CardController {
    * 작업자 할당, 변경
    * @param updateAssigneeDto
    */
-  // @Patch(':cardId/assign')
-  // async updateAssignee(@Body() updateAssigneeDto: UpdateAssigneeDto) {}
+  @UseGuards(MemberGuard)
+  @Patch(':cardId/assignee')
+  async updateAssignee(
+    @Param('cardId') cardId: number,
+    @Body() updateAssigneeDto: UpdateAssigneeDto,
+  ) {
+    return await this.cardService.updateAssignee(cardId, updateAssigneeDto);
+  }
 }

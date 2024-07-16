@@ -11,7 +11,7 @@ import { BoardModule } from './board/board.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { CardModule } from './card/card.module';
-import { AssigneeModule } from './assignee/assignee.module';
+import { MemberModule } from './member/member.module';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { AssigneeModule } from './assignee/assignee.module';
     UserModule,
     BoardModule,
     CardModule,
-    AssigneeModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [AppService],

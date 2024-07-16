@@ -6,12 +6,14 @@ import {
   Validate,
 } from 'class-validator';
 import { MESSAGES } from 'src/constants/message.constant';
+import { Member } from 'src/member/entites/member.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,7 +24,7 @@ import { IsPhoneNumberConstraint } from '../decorators/is-phone-number.decorator
   name: 'users',
 })
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
   /**
@@ -83,4 +85,7 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date | null;
+
+  @OneToMany(() => Member, (member) => member.user)
+  members: Member[];
 }
