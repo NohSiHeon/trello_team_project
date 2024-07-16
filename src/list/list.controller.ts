@@ -41,12 +41,11 @@ export class ListController {
 
   /**
    * 리스트 조회
-   * @param findListDto
    * @returns
    */
   @Get('')
-  async findAllList(@UserInfo() user: User, @Query() findListDto: FindListDto) {
-    return this.listService.findAllList(user, findListDto);
+  async findAllList(@UserInfo() user: User, @Query('boardId') boardId: number) {
+    return this.listService.findAllList(user, +boardId);
   }
 
   /**

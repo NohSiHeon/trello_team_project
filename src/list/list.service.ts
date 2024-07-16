@@ -52,32 +52,29 @@ export class ListService {
       throw new BadRequestException('이미 존재하는 리스트 명 입니다.');
     }
 
-    //트랜잭션 ( 리스트 추가, 리스트 rank 추가)
-    return await this.entityManager.transaction(async (manager) => {
-
       //가장 마지막 rank인 list 찾음
-      const highRankList = await manager.findOne(List, {
+      // 0|000000 ~ 0|zzzzzzz
+      const highRankList = await this.listRepository.findOne({
         where: {boardId: createListDto.boardId},
         order: { rank: 'DESC'}
       });
 
-      //마지막 rank + / rank가 없다면 최소값 세팅
+      //마지막 rank에 + / rank가 없다면 미들값 세팅
       let newRank: string;
       if(highRankList) {
         const highRank = LexoRank.parse(highRankList.rank);
         newRank = highRank.genNext().toString();
       }else {
-        newRank = LexoRank.min().toString();
+        newRank = LexoRank.middle().toString();
       }
 
-      const createNewList = await manager.save(List, {
+      const createNewList = await this.listRepository.save({
         boardId: createListDto.boardId,
         title: createListDto.title,
         rank: newRank,
       });
 
       return createNewList;
-    });
   }
 
   //리스트 이름 수정
@@ -113,21 +110,13 @@ export class ListService {
 
   //리스트 조회
 
-  async findAllList(user: User, findListDto: FindListDto) {
+  async findAllList(user: User, boardId: number) {
 
-    const listOrder = await this.listOrderRepository.findOne({
-      where: { boardId: findListDto.boardId },
+    const findList = await this.listRepository.find({
+      where: {boardId: boardId},
+      order: { rank: 'ASC'},
+      select: {title: true}
     });
-
-    const orderId = listOrder.listOrder;
-
-    const findList = await this.listRepository.query(
-      `select a.title
-      from lists a join list_orders b
-      on a.board_id = b.order_id 
-      where a.board_id = ${findListDto.boardId}
-      order by rank asc)`,
-    );
 
     return findList;
   }
@@ -136,23 +125,51 @@ export class ListService {
 
   async updateListOrder(user: User, updateOrderDto: UpdateOrderDto) {
 
-    const listOrder = await this.listOrderRepository.findOne({
+    const lists = await this.listRepository.find({
       where: { boardId: updateOrderDto.boardId },
+      order: { rank: 'ASC'}
     });
 
-    const listIndex = listOrder.listOrder.indexOf(updateOrderDto.listId);
-    const newIndex = updateOrderDto.sort - 1;
+    const listCount = lists.length;
+    const newSort = updateOrderDto.sort;
 
-    if (listIndex === -1) {
-      throw new BadRequestException('리스트가 존재하지 않습니다.');
+    if(newSort < 0 || newSort > listCount) {
+      throw new BadRequestException(
+        '이동 불가능 위치 입니다.'
+      )
+    }
+    
+    console.log(updateOrderDto.listId);
+
+    const movingList = lists.find((list) => list.listId === updateOrderDto.listId);
+    if(!movingList) {
+      throw new BadRequestException(
+        '리스트가 존재하지 않습니다.'
+      )
+    };
+
+    let newRank: string;
+
+    //맨 처음으로 가는 경우
+    if(newSort === 1) {
+      const firstList = lists[0];
+      const firstRank = LexoRank.parse(firstList.rank);
+      newRank = firstRank.genPrev().toString();
+    } else if(newSort === listCount) { //맨 마지막으로 가는 경우
+      const lastList = lists[listCount-1];
+      const lastRank = LexoRank.parse(lastList.rank);
+      newRank = lastRank.genNext().toString();
+    } else {  //중간으로 이동
+      const beforeList = lists[newSort - 2];
+      const afterList = lists[newSort - 1];
+      const beforeRank = LexoRank.parse(beforeList.rank);
+      const afterRank = LexoRank.parse(afterList.rank);
+      newRank = beforeRank.between(afterRank).toString();
     }
 
-    const itemToMove = listOrder.listOrder[listIndex];
-    listOrder.listOrder.splice(listIndex, 1);
-    listOrder.listOrder.splice(newIndex, 0, itemToMove);
+    movingList.rank = newRank;
+    await this.listRepository.save(movingList);
 
-    await this.listOrderRepository.save(listOrder);
-
-    return listOrder;
+    return movingList;
   }
 }
