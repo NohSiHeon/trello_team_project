@@ -15,6 +15,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { User } from 'src/user/entities/user.entity';
 import { FindListDto } from './dto/find-list.dto';
 import { Member } from 'src/member/entites/member.entity';
+import { LexoRank } from 'lexorank';
 
 @Injectable()
 export class ListService {
@@ -51,26 +52,29 @@ export class ListService {
       throw new BadRequestException('이미 존재하는 리스트 명 입니다.');
     }
 
-    //트랜잭션 ( 리스트 추가, 리스트 오더 배열 추가)
+    //트랜잭션 ( 리스트 추가, 리스트 rank 추가)
     return await this.entityManager.transaction(async (manager) => {
+
+      //가장 마지막 rank인 list 찾음
+      const highRankList = await manager.findOne(List, {
+        where: {boardId: createListDto.boardId},
+        order: { rank: 'DESC'}
+      });
+
+      //마지막 rank + / rank가 없다면 최소값 세팅
+      let newRank: string;
+      if(highRankList) {
+        const highRank = LexoRank.parse(highRankList.rank);
+        newRank = highRank.genNext().toString();
+      }else {
+        newRank = LexoRank.min().toString();
+      }
+
       const createNewList = await manager.save(List, {
         boardId: createListDto.boardId,
         title: createListDto.title,
+        rank: newRank,
       });
-
-      const listOrder = await manager.findOne(ListOrder, {
-        where: { boardId: createListDto.boardId },
-      });
-
-      if (!listOrder) {
-        await manager.save(ListOrder, {
-          boardId: createListDto.boardId,
-          listOrder: [createNewList.listId],
-        });
-      } else {
-        listOrder.listOrder.push(createNewList.listId);
-        await manager.save(ListOrder, listOrder);
-      }
 
       return createNewList;
     });
