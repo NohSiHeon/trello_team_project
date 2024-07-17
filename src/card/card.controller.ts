@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { Card } from './entities/card.entity';
@@ -15,12 +16,16 @@ import { CardService } from './card.service';
 import { UpdateCardDto } from './dtos/update-card.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UpdateCardOrderDto } from './dtos/update-card-order.dto';
+import { UserInfo } from 'src/util/user-info.decorator';
+import { User } from 'src/user/entities/user.entity';
+import { CurrentUserMemberGuard } from 'src/auth/guards/current-user-member-auth.guard';
 import { MemberGuard } from 'src/auth/guards/member-auth.guard';
-import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('cards')
-@UseGuards(JwtAuthGuard)
-@UseGuards(MemberGuard)
+@UseGuards(JwtAuthGuard, CurrentUserMemberGuard)
+@ApiBearerAuth()
 @Controller('cards')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
@@ -32,6 +37,7 @@ export class CardController {
    */
   @Post()
   async createCard(
+    @UserInfo() user: User,
     @Body() createCardDto: CreateCardDto,
   ): Promise<ApiResponse<Card>> {
     return this.cardService.createCard(createCardDto);
@@ -42,8 +48,11 @@ export class CardController {
    * @returns
    */
   @Get()
-  async getAllCards(): Promise<ApiResponse<Card[]>> {
-    return await this.cardService.getAllCards();
+  async getAllCards(
+    @UserInfo() user: User,
+    @Query('listId') listId: number,
+  ): Promise<ApiResponse<Card[]>> {
+    return await this.cardService.getAllCards(listId);
   }
 
   /**
@@ -52,7 +61,10 @@ export class CardController {
    * @returns
    */
   @Get(':cardId')
-  async getCard(@Param('cardId') cardId: number): Promise<ApiResponse<Card>> {
+  async getCard(
+    @UserInfo() user: User,
+    @Param('cardId') cardId: number,
+  ): Promise<ApiResponse<Card>> {
     return await this.cardService.getCard(cardId);
   }
 
@@ -63,6 +75,7 @@ export class CardController {
    */
   @Delete(':cardId')
   async deleteCard(
+    @UserInfo() user: User,
     @Param('cardId') cardId: number,
   ): Promise<ApiResponse<Card>> {
     return await this.cardService.deleteCard(cardId);
@@ -76,6 +89,7 @@ export class CardController {
    */
   @Patch(':cardId')
   async updateCard(
+    @UserInfo() user: User,
     @Param('cardId') cardId: number,
     @Body() updateCardDto: UpdateCardDto,
   ): Promise<ApiResponse<Card>> {
@@ -89,9 +103,25 @@ export class CardController {
   @UseGuards(MemberGuard)
   @Patch(':cardId/assignee')
   async updateAssignee(
+    @UserInfo() user: User,
     @Param('cardId') cardId: number,
     @Body() updateAssigneeDto: UpdateAssigneeDto,
   ) {
     return await this.cardService.updateAssignee(cardId, updateAssigneeDto);
+  }
+
+  /**
+   * 카드 이동
+   * @param cardId
+   * @param updateCardOrderDto
+   * @returns
+   */
+  @Patch(':cardId/order')
+  async updateCardOrder(
+    @UserInfo() user: User,
+    @Param('cardId') cardId: number,
+    @Body() updateCardOrderDto: UpdateCardOrderDto,
+  ) {
+    return await this.cardService.updateCardOrder(cardId, updateCardOrderDto);
   }
 }

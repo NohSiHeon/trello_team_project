@@ -6,6 +6,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -39,5 +40,6 @@ export class Comment {
   @ManyToOne((type): typeof Member => Member, (member) => member.comments, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'member_id' })
   member: Member;
 }

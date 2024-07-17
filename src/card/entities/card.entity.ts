@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -12,6 +13,7 @@ import { CardColor } from '../types/card-color.type';
 import { Assignee } from 'src/card/entities/assignee.entity';
 import { List } from 'src/list/entities/list.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
+import { LexoRank } from 'lexorank';
 
 @Entity('cards')
 export class Card {
@@ -44,9 +46,19 @@ export class Card {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Column()
+  rank: string;
+
   @ManyToOne(() => List, (list) => list.cards, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'list_id', referencedColumnName: 'listId' })
   list: List;
+
+  @BeforeInsert()
+  setRank() {
+    if (!this.rank) {
+      this.rank = LexoRank.middle().toString();
+    }
+  }
 
   @OneToMany(() => Comment, (comment) => comment.card)
   comments: Comment[];

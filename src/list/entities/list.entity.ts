@@ -10,9 +10,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { CardOrder } from './cardOrder.entity';
 import { Board } from 'src/board/entities/board.entity';
 import { Card } from 'src/card/entities/card.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({
   name: 'lists',
@@ -46,7 +46,7 @@ export class List {
    * @example 0|000000:
    */
   @Column({ type: 'varchar', name: 'rank' })
-  rank: string;  
+  rank: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -55,5 +55,6 @@ export class List {
   updatedAt: Date;
 
   @OneToMany(() => Card, (card) => card.list)
+  @Exclude()
   cards: Card[];
 }
