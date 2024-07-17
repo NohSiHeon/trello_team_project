@@ -19,7 +19,6 @@ export class ListService {
   constructor(
     @InjectRepository(List)
     private listRepository: Repository<List>,
-    private readonly jwtService: JwtService,
   ) {}
 
   //리스트 존재 여부
@@ -37,7 +36,10 @@ export class ListService {
   async createList(user: User, createListDto: CreateListDto) {
 
     const existList = await this.listRepository.findOne({
-      where: { title: createListDto.title },
+      where: { 
+        title: createListDto.title,
+        boardId: createListDto.boardId      
+      },
     });
 
     if (existList) {
@@ -135,7 +137,7 @@ export class ListService {
 
     const movingList = lists.find((list) => list.listId === updateOrderDto.listId);
     if(!movingList) {
-      throw new BadRequestException(
+      throw new NotFoundException(
         '리스트가 존재하지 않습니다.'
       )
     };

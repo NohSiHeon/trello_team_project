@@ -4,7 +4,6 @@ import { CardService } from './card.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Card } from './entities/card.entity';
 import { List } from 'src/list/entities/list.entity';
-import { CardOrder } from 'src/list/entities/cardOrder.entity';
 import { Member } from 'src/member/entites/member.entity';
 import { MemberModule } from 'src/member/member.module';
 import { AuthModule } from 'src/auth/auth.module';
@@ -12,7 +11,7 @@ import { Assignee } from 'src/card/entities/assignee.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Card, List, CardOrder, Member, Assignee]),
+    TypeOrmModule.forFeature([Card, List, Member, Assignee]),
     MemberModule,
     AuthModule,
   ],
