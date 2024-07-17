@@ -47,16 +47,13 @@ export class List {
    * @example 0|000000:
    */
   @Column({ type: 'varchar', name: 'rank' })
-  rank: string;  
+  rank: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @OneToOne(() => CardOrder, (cardOrder) => cardOrder.list)
-  cardOrder: CardOrder;
 
   @OneToMany(() => Card, (card) => card.list)
   @Exclude()
