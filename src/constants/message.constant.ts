@@ -37,6 +37,10 @@ export const MESSAGES = {
         INVALID: '인증 정보가 유효하지 않습니다.',
         DISCARDED_TOKEN: '폐기된 인증 정보입니다.',
       },
+      MEMBER: {
+        NO_USER: '멤버 식별에 필요한 사용자 정보를 입력해주세요.',
+        NO_BOARD: '멤버 식별에 필요한 보드 정보를 입력해주세요.',
+      },
     },
     SIGN_UP: {
       SECCEED: '회원가입에 성공했습니다.',
