@@ -5,7 +5,6 @@ import { ListService } from './list.service';
 import { ListController } from './list.controller';
 import { List } from './entities/list.entity';
 import { Board } from 'src/board/entities/board.entity';
-import { CardOrder } from './entities/cardOrder.entity';
 
 import { AuthModule } from 'src/auth/auth.module';
 import { ConfigService } from '@nestjs/config';
@@ -21,7 +20,7 @@ import { MemberModule } from 'src/member/member.module';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([List, Board, CardOrder, Member]),
+    TypeOrmModule.forFeature([List, Board, Member]),
     AuthModule,
     MemberModule,
   ],

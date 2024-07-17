@@ -9,7 +9,8 @@ import { List } from 'src/list/entities/list.entity';
 import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
 import { Member } from 'src/member/entites/member.entity';
 import { Assignee } from 'src/card/entities/assignee.entity';
-import { User } from 'src/user/entities/user.entity';
+import { UpdateCardOrderDto } from './dtos/update-card-order.dto';
+import { LexoRank } from 'lexorank';
 
 @Injectable()
 export class CardService {
@@ -32,16 +33,15 @@ export class CardService {
    * @returns
    */
   async createCard(createCardDto: CreateCardDto): Promise<ApiResponse<Card>> {
-    const card = this.cardRepository.create(createCardDto);
+    const { listId } = createCardDto;
 
     // 리스트 조회
     const list = await this.listRepository.findOne({
       where: {
-        listId: card.listId,
+        listId: listId,
       },
     });
-
-    // 리스트 존재 여부 확인
+    // 리스트 존재 여부 예외 처리
     if (!list) {
       const errorResponse: ApiResponse<Card> = {
         statusCode: HttpStatus.NOT_FOUND,
@@ -50,6 +50,29 @@ export class CardService {
       };
       return errorResponse;
     }
+
+    //
+    const cards = await this.cardRepository.find({
+      where: { listId },
+      order: { rank: 'ASC' },
+    });
+
+    let rank: string;
+    if (cards.length === 0) {
+      // 카드가 처음 생길 경우 초기값 설정
+      rank = LexoRank.middle().toString();
+      console.log('if');
+    } else {
+      // 마지막 카드보다 다음 순서로 설정
+      console.log('else');
+      rank = LexoRank.parse(cards[cards.length - 1].rank)
+        .genNext()
+        .toString();
+    }
+
+    const card = this.cardRepository.create(createCardDto);
+    // 카드 rank에 rank 할당
+    card.rank = rank;
 
     // DB에 적용
     await this.cardRepository.save(card);
@@ -67,16 +90,15 @@ export class CardService {
    * 카드 조회 API
    * @returns
    */
-  async getAllCards(): Promise<ApiResponse<Card[]>> {
+  async getAllCards(listId: number): Promise<ApiResponse<Card[]>> {
     // 카드 전부 가져오기
-    const card = await this.cardRepository.find({});
+    const card = await this.cardRepository.find({ where: { listId } });
 
     // 반환값
     const response: ApiResponse<Card[]> = {
       statusCode: HttpStatus.OK,
       message: '카드 조회에 성공했습니다.',
       data: card,
-      error: 'NotFound',
     };
     return response;
   }
@@ -97,9 +119,9 @@ export class CardService {
         message: '존재하지 않는 카드입니다.',
         error: 'Not Found',
       };
+
       return errorResponse;
     }
-
     // 반환값
     const response: ApiResponse<Card> = {
       statusCode: HttpStatus.OK,
@@ -223,7 +245,7 @@ export class CardService {
 
     // 멤버가 아닐경우 예외 처리
     if (!member) {
-      throw new NotFoundException('없어');
+      throw new NotFoundException('멤버가 아닙니다.');
     }
 
     // id가 cardId와 일치한 카드 가져오기
@@ -283,6 +305,100 @@ export class CardService {
     };
 
     return response;
+  }
+
+  /**
+   * 카드 이동
+   * @param cardId
+   * @param updateCardOrderDto
+   * @returns
+   */
+  async updateCardOrder(
+    cardId: number,
+    updateCardOrderDto: UpdateCardOrderDto,
+  ) {
+    const { listId, newOrder } = updateCardOrderDto;
+
+    // 이동할 카드가 있는지 확인하는데 list도 relation으로 가져오기
+    const card = await this.cardRepository.findOne({
+      where: { id: cardId },
+    });
+
+    // 카드가 없을 경우 예외 처리
+    if (!card) {
+      throw new NotFoundException('없는 카드입니다.');
+    }
+
+    // 이동할 리스트 조회
+    const list = await this.listRepository.findOne({
+      where: { listId: listId },
+      relations: ['cards'],
+    });
+
+    // 리스트 없을 경우 예외 처리
+    if (!list) {
+      throw new NotFoundException('없는 리스트입니다.');
+    }
+    console.log('card.list = ', card.listId);
+    console.log('listId = ', listId);
+
+    // 카드가 다른 리스트로 이동할 경우 리스트 변경
+    if (card.listId !== listId) {
+      card.listId = listId;
+      console.log('if 에 걸릴 시 변경된 listId =', card.listId);
+    }
+
+    // 이동할 리스트의 카드를 rank 순서대로 정렬
+    const cardsOnList = list.cards.sort((a, b) =>
+      LexoRank.parse(a.rank).compareTo(LexoRank.parse(b.rank)),
+    );
+
+    console.log('cards = ', cardsOnList);
+    console.log('카드 = ', card);
+    console.log(
+      '카드인덱스: ',
+      cardsOnList.findIndex((card) => card.id === cardId),
+    );
+
+    // 옮겨지는 카드 삭제
+    cardsOnList.splice(
+      cardsOnList.findIndex((card) => card.id === cardId),
+      1,
+    );
+    console.log(cardsOnList);
+
+    // 새로운 위치에 카드 추가
+    cardsOnList.splice(newOrder, 0, card);
+    console.log(cardsOnList);
+    console.log(cardsOnList.length);
+
+    //카드 rank 재조정
+    for (let i = 0; i < cardsOnList.length; i++) {
+      const prevRank = i === 0 ? null : LexoRank.parse(cardsOnList[i - 1].rank);
+      const nextRank =
+        i === cardsOnList.length - 1
+          ? null
+          : LexoRank.parse(cardsOnList[i + 1].rank);
+      console.log(nextRank);
+
+      if (prevRank && nextRank) {
+        // 두 값이 다 있을 경우 prev, next 사이에 값 넣기
+        cardsOnList[i].rank = prevRank.between(nextRank).toString();
+      } else if (prevRank) {
+        // prev 값만 있을 경우 prev 뒤에 값 넣기
+        cardsOnList[i].rank = prevRank.genNext().toString();
+      } else if (nextRank) {
+        // next 값만 있을 경우 next 전에 값 넣기
+        cardsOnList[i].rank = nextRank.genPrev().toString();
+      } else {
+        // prev, next 둘 다 없을 경우 기본 값 넣기
+        cardsOnList[i].rank = LexoRank.middle().toString();
+      }
+      console.log(cardsOnList);
+      // 카드 저장
+      await this.cardRepository.save(cardsOnList[i]);
+    }
+    return card;
   }
 
   /**
