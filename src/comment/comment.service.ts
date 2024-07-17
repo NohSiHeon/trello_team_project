@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
 import { Card } from 'src/card/entities/card.entity';
+import { User } from 'src/user/entities/user.entity';
+import { Member } from 'src/member/entites/member.entity';
 
 @Injectable()
 export class CommentService {
@@ -13,23 +15,32 @@ export class CommentService {
     private readonly commentRepository: Repository<Comment>,
     @InjectRepository(Card)
     private readonly cardRepository: Repository<Card>,
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
   ) {} // DB 가져오기
 
   // 댓글 생성
-  async create(createCommentDto: CreateCommentDto) {
+  async create(user: User, createCommentDto: CreateCommentDto) {
     const { cardId, ...commentData } = createCommentDto;
 
     const card = await this.cardCheck(cardId);
+
+    const member = await this.memberRepository.findOne({
+      where: { userId: user.id },
+    });
 
     // Comment 엔티티 생성 및 저장
     const comment = this.commentRepository.create({
       ...commentData,
       card, // card 엔티티를 직접 설정
+      member,
     });
 
+    console.log(member);
     let data = await this.commentRepository.save(comment);
 
     return {
+      userId: member.userId,
       commentId: data.id,
       content: data.content,
       createdAt: data.createdAt,

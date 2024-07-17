@@ -17,7 +17,9 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/util/user-info.decorator';
-import { Card } from 'src/card/entities/card.entity';
+
+import { CurrentUserMemberGuard } from 'src/auth/guards/current-user-member-auth.guard';
+import { MemberGuard } from 'src/auth/guards/member-auth.guard';
 
 @ApiTags('댓글 API')
 @ApiBearerAuth()
@@ -32,16 +34,15 @@ export class CommentController {
    * @returns
    */
   @Post()
+  @UseGuards(CurrentUserMemberGuard)
   async create(
     @Body() createCommentDto: CreateCommentDto,
     @UserInfo() user: User,
   ) {
-    const userId = user.id;
-    const data = await this.commentService.create(createCommentDto); //+cardId 합치고 추가
+    const data = await this.commentService.create(user, createCommentDto); //+cardId 합치고 추가
     return {
       status: HttpStatus.CREATED,
       message: '댓글 생성에 성공하였습니다.',
-      userId,
       data,
     };
   }

@@ -4,8 +4,16 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateCommentDto extends PickType(Comment, ['content']) {
   /**
+   * 보드 ID
+   * @example "1"
+   */
+  @IsNotEmpty({ message: '보드 ID를 입력해주세요' })
+  @IsNumber()
+  boardId: number;
+
+  /**
    * 카드 ID
-   * @exampl1 1
+   * @example "1"
    */
   @IsNotEmpty({ message: '카드 ID를 입력해주세요' })
   @IsNumber()
