@@ -38,13 +38,7 @@ export class BoardController {
     console.log(userId);
     const boardTitle = createBoardDto.title;
 
-    const data = await this.boardService.create(userId, boardTitle);
-
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: '보드 생성에 성공했습니다',
-      data: data,
-    };
+    return await this.boardService.create(userId, boardTitle);
   }
   /**
    * 보드 목록 조회
@@ -54,13 +48,8 @@ export class BoardController {
   @Get()
   async findAll(@Request() req) {
     const userId = req.user.id;
-    const data = await this.boardService.findAll(userId);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: '보드 목록 조회에 성공했습니다.',
-      data: data,
-    };
+    return await this.boardService.findAll(userId);
   }
 
   /**
@@ -70,7 +59,7 @@ export class BoardController {
    * @returns
    */
   @Get(':boardId')
-  findOne(@Request() req, @Param('boardId') boardId: number) {
+  findOne(@Param('boardId') boardId: number) {
     return this.boardService.findOne(+boardId);
   }
 
@@ -87,9 +76,8 @@ export class BoardController {
     @UserInfo() user: User,
     @Body() updateBoardDto: UpdateBoardDto,
   ) {
-    console.log(user);
-    return this.boardService.update(user, +boardId, updateBoardDto);
-  }
+    return this.boardService.update(user, +boardId, updateBoardDto)
+}
 
   /**
    * 보드 삭제
@@ -98,8 +86,7 @@ export class BoardController {
    */
   @Delete(':boardId')
   remove(@Param('boardId') boardId: number) {
-    console.log(+boardId);
-    return this.boardService.remove(+boardId);
+    return this.boardService.remove(+boardId)
   }
 
   /**
@@ -116,6 +103,6 @@ export class BoardController {
     @Body() email: CheckEmailDto,
   ) {
     const adminId = req.user.id;
-    return this.boardService.inviteMember(+adminId, +boardId, email);
-  }
+    return this.boardService.inviteMember(+adminId, +boardId, email)
+}
 }

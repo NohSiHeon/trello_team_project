@@ -25,6 +25,7 @@ export class BoardService {
     @InjectRepository(Card) private cardRepository: Repository<Card>,
     private dataSource: DataSource,
   ) {}
+
   async create(userId: number, boardTitle: string) {
     const receivedData = {
       adminId: userId,
@@ -50,7 +51,7 @@ export class BoardService {
       await queryRunner.commitTransaction()
       return {
         statusCode: HttpStatus.CREATED,
-        message: '보드 생성에 성공했습니다.',
+        message: '보드 생성에 성공했습니다',
         data: boardSavedData,
       };
     }catch(error){
@@ -72,17 +73,29 @@ export class BoardService {
     });
     const data = { ownBoards, invitedBoards };
     return {
-      statusCode: HttpStatus.OK,
-      message: '보드 목록 조회에 성공했습니다.',
+      statusCode: HttpStatus.CREATED,
+      message: '보드 목록 조회에 성공했습니다',
       data: data,
-    };
+    }
   }
 
+
   async findOne(boardId: number) {
+    // 보드와 연결된 리스트, 리스트에 묶인 카드 찾기
     const allListsInBoard = await this.boardRepository.find({
       where: { id: boardId },
-      relations: ['list'],
+      relations: ['list', 'list.cards'],
     });
+    // 각 리스트를 rank로 정렬
+    allListsInBoard.forEach(board => {
+      board.list.sort((a, b) => a.rank.localeCompare(b.rank))
+      //보드 - 리스트 내 카드 정렬
+       board.list.forEach(list => {
+        list.cards.sort((a, b) => a.rank.localeCompare(b.rank))
+      })
+    })
+
+    
     return {
       statusCode: HttpStatus.OK,
       message: '보드 상세 조회에 성공했습니다.',
@@ -115,7 +128,7 @@ export class BoardService {
       statusCode: HttpStatus.ACCEPTED,
       message: '보드 수정에 성공했습니다',
       data: updatedData,
-    };
+  };
   }
 
   async remove(id: number) {
@@ -164,6 +177,6 @@ export class BoardService {
       statusCode: HttpStatus.CREATED,
       message: '보드 초대가 완료되었습니다.',
       data: inviteMember,
-    };
+  }
   }
 }
