@@ -21,7 +21,7 @@ export class List {
   @PrimaryGeneratedColumn({ name: 'list_id', unsigned: true, type: 'int' })
   listId: number;
 
-  @ManyToOne(() => Board, (board) => board.list)
+  @ManyToOne(() => Board, (board) => board.list, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'board_id', referencedColumnName: 'id' })
   board: Board;
 

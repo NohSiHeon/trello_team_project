@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CheckEmailDto } from './dto/check-email.dto';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MESSAGES } from 'src/constants/message.constant';
@@ -78,22 +78,35 @@ export class UserService {
       throw new NotFoundException(MESSAGES.USERS.COMMON.NOT_FOUND);
     }
 
-    const isExistingAdmin = await this.boardRepository.findOne({
-      where: {
-        adminId: id,
-      },
-    });
-    if (isExistingAdmin) {
-      throw new NotFoundException(
-        MESSAGES.USERS.DELETE_ACCOUNT.ADMIN_CANNOT_DELETE,
-      );
-    }
-
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
+      // 현재 유저가 Admin 인지 확인
+      const isExistingAdmin = await queryRunner.manager.find(Board, {
+        where: {
+          adminId: id,
+        },
+      });
+
+      for (let board of isExistingAdmin) {
+        const otherMembers = await queryRunner.manager.find(Member, {
+          where: {
+            boardId: board.id,
+            userId: Not(id),
+          },
+        });
+
+        // Admin 유저 이면서 가지고 있는 보드의 초대된 멤버가 있는 경우 예외 발생
+        if (!_.isEmpty(otherMembers)) {
+          console.log('OK');
+          throw new NotFoundException(
+            MESSAGES.USERS.DELETE_ACCOUNT.ADMIN_CANNOT_DELETE,
+          );
+        }
+      }
+
       const userMembers = await queryRunner.manager.find(Member, {
         where: {
           userId: existedUser.id,
@@ -106,11 +119,18 @@ export class UserService {
         });
       }
 
+      for (let board of isExistingAdmin) {
+        await queryRunner.manager.delete(Board, {
+          id: board.id,
+        });
+      }
+
       await queryRunner.manager.softDelete(User, { id: existedUser.id });
 
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
+      throw err;
     } finally {
       await queryRunner.release();
     }
