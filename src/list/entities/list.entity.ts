@@ -13,6 +13,7 @@ import {
 import { CardOrder } from './cardOrder.entity';
 import { Board } from 'src/board/entities/board.entity';
 import { Card } from 'src/card/entities/card.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({
   name: 'lists',
@@ -51,5 +52,6 @@ export class List {
   cardOrder: CardOrder;
 
   @OneToMany(() => Card, (card) => card.list)
+  @Exclude()
   cards: Card[];
 }
