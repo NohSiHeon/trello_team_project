@@ -8,11 +8,14 @@ import { MESSAGES } from 'src/constants/message.constant';
 import { MemberService } from 'src/member/member.service';
 
 @Injectable()
-export class MemberGuard implements CanActivate {
+export class CurrentUserMemberGuard implements CanActivate {
   constructor(private readonly memberservice: MemberService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const { userId, boardId } = request.body;
+
+    const userId = request.user?.id;
+    let { boardId } = request.body;
+    if (request?.query?.boardId) boardId = request.query.boardId;
 
     if (!userId) {
       throw new NotFoundException(MESSAGES.AUTH.COMMON.MEMBER.NO_USER);

@@ -15,11 +15,11 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/util/user-info.decorator';
-import { ApiTags } from '@nestjs/swagger';
-import { MemberGuard } from 'src/auth/guards/member-auth.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CurrentUserMemberGuard } from 'src/auth/guards/current-user-member-auth.guard';
 
-@UseGuards(JwtAuthGuard)
-@UseGuards(MemberGuard)
+@UseGuards(JwtAuthGuard, CurrentUserMemberGuard)
+@ApiBearerAuth()
 @ApiTags('list')
 @Controller('lists')
 export class ListController {

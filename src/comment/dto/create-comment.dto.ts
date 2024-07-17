@@ -9,5 +9,5 @@ export class CreateCommentDto extends PickType(Comment, ['content']) {
    */
   @IsNotEmpty({ message: '카드 ID를 입력해주세요' })
   @IsNumber()
-  card_id: number;
+  cardId: number;
 }

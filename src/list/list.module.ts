@@ -23,7 +23,7 @@ import { MemberModule } from 'src/member/member.module';
     }),
     TypeOrmModule.forFeature([List, Board, CardOrder, Member]),
     AuthModule,
-    MemberModule
+    MemberModule,
   ],
   providers: [ListService],
   controllers: [ListController],

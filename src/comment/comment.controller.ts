@@ -8,13 +8,20 @@ import {
   Delete,
   HttpStatus,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { User } from 'src/user/entities/user.entity';
+import { UserInfo } from 'src/util/user-info.decorator';
+import { Card } from 'src/card/entities/card.entity';
 
 @ApiTags('댓글 API')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
@@ -25,11 +32,16 @@ export class CommentController {
    * @returns
    */
   @Post()
-  async create(@Body() createCommentDto: CreateCommentDto) {
+  async create(
+    @Body() createCommentDto: CreateCommentDto,
+    @UserInfo() user: User,
+  ) {
+    const userId = user.id;
     const data = await this.commentService.create(createCommentDto); //+cardId 합치고 추가
     return {
       status: HttpStatus.CREATED,
       message: '댓글 생성에 성공하였습니다.',
+      userId,
       data,
     };
   }
@@ -79,7 +91,7 @@ export class CommentController {
     return {
       status: HttpStatus.OK,
       message: '댓글 전체 조회에 성공하였습니다',
-      data,
+      data: { card: data.card, comment: data.data },
     };
   }
 
