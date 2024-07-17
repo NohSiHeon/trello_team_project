@@ -46,6 +46,7 @@ jobs:
 
           npm run test src/list/list.controller.spec.ts
           npm run test src/list/list.service.spec.ts
+          npm run test src/card/card.service.spec.ts
 
       # yarn test
       # npm run test
