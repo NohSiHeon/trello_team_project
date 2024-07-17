@@ -54,9 +54,6 @@ export class List {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => CardOrder, (cardOrder) => cardOrder.list)
-  cardOrder: CardOrder;
-
   @OneToMany(() => Card, (card) => card.list)
   cards: Card[];
 }

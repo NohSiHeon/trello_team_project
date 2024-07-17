@@ -17,12 +17,12 @@ export class CardOrder {
   @PrimaryGeneratedColumn({ name: 'order_id' })
   orderId: number;
 
-  @OneToOne(() => List, (list) => list.cardOrder)
-  @JoinColumn({ name: 'list_id' })
-  list: List;
+  // @OneToOne(() => List, (list) => list.cardOrder)
+  // @JoinColumn({ name: 'list_id' })
+  // list: List;
 
-  @Column({ type: 'int', name: 'list_id', unsigned: true })
-  listId: number;
+  // @Column({ type: 'int', name: 'list_id', unsigned: true })
+  // listId: number;
 
   @IsNotEmpty()
   @Column({ type: 'json', name: 'card_order' })
