@@ -36,7 +36,10 @@ export class ListService {
   async createList(user: User, createListDto: CreateListDto) {
 
     const existList = await this.listRepository.findOne({
-      where: { title: createListDto.title },
+      where: { 
+        title: createListDto.title,
+        boardId: createListDto.boardId      
+      },
     });
 
     if (existList) {
