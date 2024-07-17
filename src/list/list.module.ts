@@ -5,7 +5,6 @@ import { ListService } from './list.service';
 import { ListController } from './list.controller';
 import { List } from './entities/list.entity';
 import { Board } from 'src/board/entities/board.entity';
-import { ListOrder } from './entities/listOrder.entity';
 import { CardOrder } from './entities/cardOrder.entity';
 
 import { AuthModule } from 'src/auth/auth.module';
@@ -22,7 +21,7 @@ import { MemberModule } from 'src/member/member.module';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([List, Board, ListOrder, CardOrder, Member]),
+    TypeOrmModule.forFeature([List, Board, CardOrder, Member]),
     AuthModule,
     MemberModule,
   ],
