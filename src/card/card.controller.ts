@@ -17,10 +17,10 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
 import { MemberGuard } from 'src/auth/guards/member-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
-// import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
 
 @ApiTags('cards')
 @UseGuards(JwtAuthGuard)
+@UseGuards(MemberGuard)
 @Controller('cards')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
