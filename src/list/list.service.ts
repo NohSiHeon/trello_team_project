@@ -19,7 +19,6 @@ export class ListService {
   constructor(
     @InjectRepository(List)
     private listRepository: Repository<List>,
-    private readonly jwtService: JwtService,
   ) {}
 
   //리스트 존재 여부

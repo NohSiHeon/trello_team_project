@@ -7,6 +7,8 @@ import { BadRequestException } from '@nestjs/common';
 import { CreateListDto } from './dto/create-list.dto';
 import { User } from 'src/user/entities/user.entity';
 import { LexoRank } from 'lexorank';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CurrentUserMemberGuard } from 'src/auth/guards/current-user-member-auth.guard';
 
 describe('ListService', () => {
   let service: ListService;
@@ -23,7 +25,8 @@ describe('ListService', () => {
             save: jest.fn(),
       },
     },],
-    }).compile();
+    })
+    .compile();
 
     service = module.get<ListService>(ListService);
     listRepository = module.get<Repository<List>>(getRepositoryToken(List)) as jest.Mocked<Repository<List>>;
@@ -33,6 +36,7 @@ describe('ListService', () => {
     expect(service).toBeDefined();
   });
 
+  //리스트 존재 여부
   describe('existList', () => {
     it('should return list if exists', async () => {
       const listId = 1;
@@ -55,23 +59,27 @@ describe('ListService', () => {
     });
   });
 
+  //리스트 생성
   describe('createList', () => {
     it('should throw BadRequestException if list title already exists', async () => {
       const createListDto: CreateListDto = {
-        title: 'Test List',
         boardId: 1,
+        title: 'Test List1',
       };
       const user = new User();
+      const existList = new List();
+      existList.title = 'Test List1';
+      existList.boardId = 1;
 
-      listRepository.findOne.mockResolvedValue(new List());
+      listRepository.findOne.mockResolvedValue(existList);
 
       await expect(service.createList(user, createListDto)).rejects.toThrow(BadRequestException);
     });
 
     it('should create and return a new list with correct rank', async () => {
       const createListDto: CreateListDto = {
-        title: 'Test List',
         boardId: 1,
+        title: 'Test List1',
       };
       const user = new User();
       const newList = new List();
@@ -79,9 +87,7 @@ describe('ListService', () => {
       newList.boardId = createListDto.boardId;
       newList.rank = LexoRank.middle().toString();
 
-      listRepository.findOne
-        .mockResolvedValueOnce(null)  // No list with same title
-        .mockResolvedValueOnce(null); // No existing list for rank
+      listRepository.findOne.mockResolvedValueOnce(null).mockResolvedValueOnce(null); 
       listRepository.save.mockResolvedValue(newList);
 
       const result = await service.createList(user, createListDto);
@@ -90,21 +96,24 @@ describe('ListService', () => {
     });
 
     it('should create and return a new list with incremented rank', async () => {
-      const createListDto: CreateListDto = {
-        title: 'Test List',
-        boardId: 1,
-      };
       const user = new User();
-      const existingList = new List();
-      existingList.rank = LexoRank.middle().toString();
+      const existingList = {
+        boardId: 1,
+        title: 'Test List1',
+        rank: LexoRank.middle().toString()
+      } as List;
+
+      const createListDto: CreateListDto = {
+        boardId: 1,
+        title: 'Test List2',
+      };
+
       const newList = new List();
-      newList.title = createListDto.title;
       newList.boardId = createListDto.boardId;
+      newList.title = createListDto.title;
       newList.rank = LexoRank.parse(existingList.rank).genNext().toString();
 
-      listRepository.findOne
-        .mockResolvedValueOnce(null)  // No list with same title
-        .mockResolvedValueOnce(existingList); // Existing list for rank
+      listRepository.findOne.mockResolvedValueOnce(null).mockResolvedValueOnce(existingList); 
       listRepository.save.mockResolvedValue(newList);
 
       const result = await service.createList(user, createListDto);
