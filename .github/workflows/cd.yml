@@ -5,7 +5,7 @@ on:
   workflow_run: # 특정 workflow가 실행됐을 때
     workflows: ['trello_team_project_CI'] # CI workflow
     types: [completed] # 완료 되었을 때
-    branches: [main] # main 브랜치
+    branches: [dev] # main 브랜치
 
 jobs:
   deploy:
