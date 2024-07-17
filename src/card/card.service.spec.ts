@@ -9,12 +9,11 @@ import { List } from 'src/list/entities/list.entity';
 import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
 import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { ApiResponse } from './interfaces/api-response';
-import { LexoRank } from 'lexorank';
 import { UpdateCardOrderDto } from './dtos/update-card-order.dto';
 
 describe('CardService', () => {
   let service: CardService;
-  let cardRepository: jest.Mocked<Repository<Card>>;   //목킹
+  let cardRepository: jest.Mocked<Repository<Card>>;   //레파지토리 목킹
   let listRepository: jest.Mocked<Repository<List>>;   
   let memberRepository: jest.Mocked<Repository<Member>>;   
   let assigneeRepository: jest.Mocked<Repository<Assignee>>; 
@@ -64,12 +63,16 @@ describe('CardService', () => {
     assigneeRepository = module.get<Repository<Assignee>>(getRepositoryToken(Assignee)) as jest.Mocked<Repository<Assignee>>;
   });
 
+  //서비스 주입 확인
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
   //작업자 수정 할당
   describe('updateAssignee', () => {
+
+    //작업자가 멤버가 아닌 경우를 체크하는 테스트
+  
     it('should throw NotFoundException if assignee is not member', async () => {
       const cardId = 1;
       const updateAssigneeDto: UpdateAssigneeDto = {
@@ -81,6 +84,8 @@ describe('CardService', () => {
 
       await expect(service.updateAssignee(cardId, updateAssigneeDto)).rejects.toThrow(NotFoundException);
     });
+
+    //카드가 존재하지 않는 경우 테스트
 
     it('should throw NotFoundException if card does not exist', async () => {
       const cardId = 1;
@@ -110,6 +115,9 @@ describe('CardService', () => {
 
   //카드 이동
   describe('updateCardOrder', () => {
+
+    //리스트가 존재하지 않는 경우 테스트
+
     it('should throw NotFoundException if list dose not exist', async () => {
       const cardId = 1;
       const updateCardOrderDto: UpdateCardOrderDto = {
@@ -124,8 +132,6 @@ describe('CardService', () => {
       card.description = 'Test Description';
       card.createdAt = new Date();
       card.updatedAt = new Date();
-      
-      // 수동으로 setRank 호출
       card.setRank();
       
       cardRepository.findOne.mockResolvedValue(card);
@@ -133,6 +139,8 @@ describe('CardService', () => {
 
       await expect(service.updateCardOrder(cardId, updateCardOrderDto)).rejects.toThrow(NotFoundException);
     });
+
+    //카드가 다른 리스트로 이동할 경우 리스트 아이디가 바뀌는지 테스트
 
     it('should update listid if move the card to different list', async () => {
       const cardId = 1;
@@ -148,8 +156,6 @@ describe('CardService', () => {
       card.description = 'Test Description';
       card.createdAt = new Date();
       card.updatedAt = new Date();
-      
-      // 수동으로 setRank 호출
       card.setRank();
 
       const list = new List();
