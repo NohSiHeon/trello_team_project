@@ -137,7 +137,7 @@ export class ListService {
 
     const movingList = lists.find((list) => list.listId === updateOrderDto.listId);
     if(!movingList) {
-      throw new BadRequestException(
+      throw new NotFoundException(
         '리스트가 존재하지 않습니다.'
       )
     };
