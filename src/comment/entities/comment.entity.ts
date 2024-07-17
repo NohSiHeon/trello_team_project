@@ -40,5 +40,6 @@ export class Comment {
   @ManyToOne((type): typeof Member => Member, (member) => member.comments, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'member_id' })
   member: Member;
 }

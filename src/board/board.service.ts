@@ -8,12 +8,12 @@ import {
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
-import { Repository } from 'typeorm';
-import { Member } from './entities/member.entity';
+import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { assignmentDto } from './dto/assignment.dto';
 import { Card } from 'src/card/entities/card.entity';
 import { List } from 'src/list/entities/list.entity';
+import { Member } from 'src/member/entites/member.entity';
 
 @Injectable()
 export class BoardService {
@@ -23,21 +23,42 @@ export class BoardService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(List) private listRepository: Repository<List>,
     @InjectRepository(Card) private cardRepository: Repository<Card>,
+    private dataSource: DataSource,
   ) {}
   async create(userId: number, boardTitle: string) {
-    const data = await this.boardRepository.save({
+    const receivedData = {
       adminId: userId,
       title: boardTitle,
-    });
-    await this.memberRepository.save({
-      boardId: data.id,
-      userId: userId,
-    });
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: '보드 생성에 성공했습니다.',
-      data: data,
-    };
+    }
+    const queryRunner = this.dataSource.createQueryRunner()
+    
+    await queryRunner.connect();
+    await queryRunner.startTransaction()
+
+    try{
+      const saveToBoard = queryRunner.manager.create(Board, receivedData)
+      const boardSavedData = await queryRunner.manager.save(saveToBoard)
+      
+      const memberData = {
+        boardId: boardSavedData.id,
+        userId: userId
+      }
+  
+      const saveToMember = queryRunner.manager.create(Member, memberData)
+      await queryRunner.manager.save(saveToMember)
+
+      await queryRunner.commitTransaction()
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: '보드 생성에 성공했습니다.',
+        data: boardSavedData,
+      };
+    }catch(error){
+      await queryRunner.rollbackTransaction()
+      throw error;
+    }finally{
+      await queryRunner.release()
+    }
   }
 
   async findAll(userId: number) {
@@ -118,7 +139,7 @@ export class BoardService {
     const boardData = await this.boardRepository.findOne({
       where: { id: boardId },
     });
-    if (boardData.id != adminId) {
+    if (boardData.adminId != adminId) {
       throw new UnauthorizedException('초대 권한이 없습니다');
     }
     const Email = email.email;

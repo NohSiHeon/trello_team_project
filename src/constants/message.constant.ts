@@ -37,6 +37,10 @@ export const MESSAGES = {
         INVALID: '인증 정보가 유효하지 않습니다.',
         DISCARDED_TOKEN: '폐기된 인증 정보입니다.',
       },
+      MEMBER: {
+        NO_USER: '멤버 식별에 필요한 사용자 정보를 입력해주세요.',
+        NO_BOARD: '멤버 식별에 필요한 보드 정보를 입력해주세요.',
+      },
     },
     SIGN_UP: {
       SECCEED: '회원가입에 성공했습니다.',
@@ -61,6 +65,8 @@ export const MESSAGES = {
       SUCCEED: '회원 탈퇴에 성공했습니다.',
       FAIL: '회원 탈퇴에 실패했습니다.',
       ALREADY_DELETED: '이미 탈퇴한 회원입니다.',
+      ADMIN_CANNOT_DELETE:
+        '어드민 유저는 탈퇴할 수 없습니다. 관리자 권한을 다른 사람에게 넘겨야 합니다.',
     },
     CHECK_EMAIL_REGISTRATION: {
       REGISTERED: '이 이메일은 이미 등록된 상태입니다.',

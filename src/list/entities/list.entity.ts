@@ -42,6 +42,13 @@ export class List {
   @Column({ type: 'varchar', name: 'title' })
   title: string;
 
+  /**
+   * 리스트 순서
+   * @example 0|000000:
+   */
+  @Column({ type: 'varchar', name: 'rank' })
+  rank: string;  
+
   @CreateDateColumn()
   createdAt: Date;
 

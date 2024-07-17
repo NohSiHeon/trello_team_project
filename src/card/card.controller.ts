@@ -16,16 +16,15 @@ import { CardService } from './card.service';
 import { UpdateCardDto } from './dtos/update-card.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
-import { MemberGuard } from 'src/auth/guards/member-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateCardOrderDto } from './dtos/update-card-order.dto';
 import { UserInfo } from 'src/util/user-info.decorator';
 import { User } from 'src/user/entities/user.entity';
-// import { UpdateAssigneeDto } from './dtos/update-assignee.dto';
+import { CurrentUserMemberGuard } from 'src/auth/guards/current-user-member-auth.guard';
+import { MemberGuard } from 'src/auth/guards/member-auth.guard';
 
 @ApiTags('cards')
-@UseGuards(JwtAuthGuard)
-@UseGuards(MemberGuard)
+@UseGuards(JwtAuthGuard, CurrentUserMemberGuard)
 @ApiBearerAuth()
 @Controller('cards')
 export class CardController {
@@ -101,7 +100,7 @@ export class CardController {
    * 작업자 할당, 변경
    * @param updateAssigneeDto
    */
-
+  @UseGuards(MemberGuard)
   @Patch(':cardId/assignee')
   async updateAssignee(
     @UserInfo() user: User,
