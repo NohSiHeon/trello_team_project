@@ -6,7 +6,6 @@ import {
   Delete,
   HttpStatus,
   UseGuards,
-  // UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -17,12 +16,10 @@ import { MESSAGES } from 'src/constants/message.constant';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from './entities/user.entity';
-// import { TransformInterceptor } from 'src/intercepter/transform.interceptor';
 
-// @UseInterceptors(new TransformInterceptor())
+@UseGuards(JwtAuthGuard)
 @ApiTags('users')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}

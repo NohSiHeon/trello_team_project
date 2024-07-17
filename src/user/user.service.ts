@@ -52,7 +52,7 @@ export class UserService {
       });
 
       // 현재 유저가 동일한 이메일로 변경할 경우
-      if (id === existedEmailUser.id) {
+      if (id === existedEmailUser?.id) {
         throw new NotFoundException(MESSAGES.USERS.UPDATE_ME.DUPLICATED_EMAIL);
       }
 
