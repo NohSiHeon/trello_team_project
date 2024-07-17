@@ -1,11 +1,9 @@
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToOne,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -23,7 +21,7 @@ export class CardOrder {
   @JoinColumn({ name: 'list_id' })
   list: List;
 
-  @Column({ type: 'int', name: 'list_id' })
+  @Column({ type: 'int', name: 'list_id', unsigned: true })
   listId: number;
 
   @IsNotEmpty()

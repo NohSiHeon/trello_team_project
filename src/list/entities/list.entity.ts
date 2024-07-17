@@ -18,7 +18,7 @@ import { Card } from 'src/card/entities/card.entity';
   name: 'lists',
 })
 export class List {
-  @PrimaryGeneratedColumn({ name: 'list_id' })
+  @PrimaryGeneratedColumn({ name: 'list_id', unsigned: true, type: 'int' })
   listId: number;
 
   @ManyToOne(() => Board, (board) => board.list)
@@ -40,6 +40,13 @@ export class List {
   @IsNotEmpty()
   @Column({ type: 'varchar', name: 'title' })
   title: string;
+
+  /**
+   * 리스트 순서
+   * @example 0|000000:
+   */
+  @Column({ type: 'varchar', name: 'rank' })
+  rank: string;  
 
   @CreateDateColumn()
   createdAt: Date;

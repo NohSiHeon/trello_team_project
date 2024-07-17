@@ -23,6 +23,7 @@ export const MESSAGES = {
       },
       PHONE_NUMBER: {
         REQUIRED: '전화번호를 입력해 주세요.',
+        INVALID_FORMAT: '전화번호 형식(000-000-000)에 맞게 입력해주세요. ',
       },
       DUPLICATED: '이미 가입된 사용자 입니다.',
       UNAUTHORIZED: '인증 정보가 유효하지 않습니다.',
@@ -54,16 +55,24 @@ export const MESSAGES = {
     UPDATE_ME: {
       SUCCEED: '내 정보 수정에 성공했습니다.',
       NO_BODY_DATA: '수정할 데이터를 입력해주세요',
+      DUPLICATED_EMAIL: '현재와 동일한 이메일입니다.',
     },
     DELETE_ACCOUNT: {
       SUCCEED: '회원 탈퇴에 성공했습니다.',
       FAIL: '회원 탈퇴에 실패했습니다.',
       ALREADY_DELETED: '이미 탈퇴한 회원입니다.',
+      ADMIN_CANNOT_DELETE:
+        '어드민 유저는 탈퇴할 수 없습니다. 관리자 권한을 다른 사람에게 넘겨야 합니다.',
     },
     CHECK_EMAIL_REGISTRATION: {
       REGISTERED: '이 이메일은 이미 등록된 상태입니다.',
       NOT_REGISTERED: '이 이메일은 등록되지 않은 상태입니다.',
       DEACTIVATED: '이 이메일은 탈퇴한 상태입니다.',
+    },
+  },
+  BOARD: {
+    COMMON: {
+      NOT_MEMBER: '보드에 추가된 유저가 아닙니다.',
     },
   },
 };

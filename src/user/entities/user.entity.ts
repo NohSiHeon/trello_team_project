@@ -1,27 +1,30 @@
 import {
   IsEmail,
   IsNotEmpty,
-  IsPhoneNumber,
   IsString,
   IsStrongPassword,
+  Validate,
 } from 'class-validator';
 import { MESSAGES } from 'src/constants/message.constant';
+import { Member } from 'src/member/entites/member.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { IsPhoneNumberConstraint } from '../decorators/is-phone-number.decorator';
 
 @Index('email', ['email'], { unique: true })
 @Entity({
   name: 'users',
 })
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
   /**
@@ -70,7 +73,7 @@ export class User {
    * @example "010-0000-0000"
    */
   @IsNotEmpty({ message: MESSAGES.AUTH.COMMON.PHONE_NUMBER.REQUIRED })
-  @IsPhoneNumber()
+  @Validate(IsPhoneNumberConstraint)
   @Column()
   phoneNumber: string;
 
@@ -82,4 +85,7 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date | null;
+
+  @OneToMany(() => Member, (member) => member.user)
+  members: Member[];
 }

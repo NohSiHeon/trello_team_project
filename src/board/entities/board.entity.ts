@@ -10,7 +10,7 @@ import {
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { BackgroundColorTypes } from '../types/backgroud-color.types';
 import { List } from 'src/list/entities/list.entity';
-import { ListOrder } from 'src/list/entities/listOrder.entity';
+import { Member } from 'src/member/entites/member.entity';
 
 //swagger 사용 고려한 주석
 @Entity('boards')
@@ -40,8 +40,8 @@ export class Board {
    * @example "red"
    */
   @IsEnum(BackgroundColorTypes)
-  @Column({ type: 'enum', enum: BackgroundColorTypes })
-  backgroundColor: BackgroundColorTypes;
+  @Column({ type: 'enum', enum: BackgroundColorTypes, default: 'Red' })
+  backgroundColor: BackgroundColorTypes | null;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -52,6 +52,6 @@ export class Board {
   @OneToMany(() => List, (list) => list.board)
   list: List[];
 
-  @OneToOne(() => ListOrder, (listOrder) => listOrder.board, { cascade: true })
-  listOrder: ListOrder;
+  @OneToMany(() => Member, (member) => member.board)
+  members: Member[];
 }
