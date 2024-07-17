@@ -79,8 +79,9 @@ export class BoardService {
   }
 
   async findOne(boardId: number) {
-    const allListsInBoard = await this.listRepository.findBy({
-      boardId: boardId,
+    const allListsInBoard = await this.boardRepository.find({
+      where: { id: boardId },
+      relations: ['list'],
     });
     return {
       statusCode: HttpStatus.OK,
