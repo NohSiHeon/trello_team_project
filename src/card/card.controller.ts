@@ -51,6 +51,7 @@ export class CardController {
   async getAllCards(
     @UserInfo() user: User,
     @Query('listId') listId: number,
+    @Query() boardId: number,
   ): Promise<ApiResponse<Card[]>> {
     return await this.cardService.getAllCards(listId);
   }

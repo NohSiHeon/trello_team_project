@@ -30,35 +30,35 @@ export class BoardService {
     const receivedData = {
       adminId: userId,
       title: boardTitle,
-    }
-    const queryRunner = this.dataSource.createQueryRunner()
-    
-    await queryRunner.connect();
-    await queryRunner.startTransaction()
+    };
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    try{
-      const saveToBoard = queryRunner.manager.create(Board, receivedData)
-      const boardSavedData = await queryRunner.manager.save(saveToBoard)
-      
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const saveToBoard = queryRunner.manager.create(Board, receivedData);
+      const boardSavedData = await queryRunner.manager.save(saveToBoard);
+
       const memberData = {
         boardId: boardSavedData.id,
-        userId: userId
-      }
-  
-      const saveToMember = queryRunner.manager.create(Member, memberData)
-      await queryRunner.manager.save(saveToMember)
+        userId: userId,
+      };
 
-      await queryRunner.commitTransaction()
+      const saveToMember = queryRunner.manager.create(Member, memberData);
+      await queryRunner.manager.save(saveToMember);
+
+      await queryRunner.commitTransaction();
       return {
         statusCode: HttpStatus.CREATED,
         message: '보드 생성에 성공했습니다',
         data: boardSavedData,
       };
-    }catch(error){
-      await queryRunner.rollbackTransaction()
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
       throw error;
-    }finally{
-      await queryRunner.release()
+    } finally {
+      await queryRunner.release();
     }
   }
 
@@ -76,9 +76,8 @@ export class BoardService {
       statusCode: HttpStatus.CREATED,
       message: '보드 목록 조회에 성공했습니다',
       data: data,
-    }
+    };
   }
-
 
   async findOne(boardId: number) {
     // 보드와 연결된 리스트, 리스트에 묶인 카드 찾기
@@ -87,15 +86,14 @@ export class BoardService {
       relations: ['list', 'list.cards'],
     });
     // 각 리스트를 rank로 정렬
-    allListsInBoard.forEach(board => {
-      board.list.sort((a, b) => a.rank.localeCompare(b.rank))
+    allListsInBoard.forEach((board) => {
+      board.list.sort((a, b) => a.rank.localeCompare(b.rank));
       //보드 - 리스트 내 카드 정렬
-       board.list.forEach(list => {
-        list.cards.sort((a, b) => a.rank.localeCompare(b.rank))
-      })
-    })
+      board.list.forEach((list) => {
+        list.cards.sort((a, b) => a.rank.localeCompare(b.rank));
+      });
+    });
 
-    
     return {
       statusCode: HttpStatus.OK,
       message: '보드 상세 조회에 성공했습니다.',
@@ -128,7 +126,7 @@ export class BoardService {
       statusCode: HttpStatus.ACCEPTED,
       message: '보드 수정에 성공했습니다',
       data: updatedData,
-  };
+    };
   }
 
   async remove(id: number) {
@@ -162,7 +160,7 @@ export class BoardService {
     if (!existedUser) {
       throw new NotFoundException('초대하려는 사용자를 찾을 수 없습니다.');
     }
-    const inviteInfo = await this.memberRepository.find({
+    const inviteInfo = await this.memberRepository.findOne({
       where: { boardId: boardId, userId: existedUser.id },
     });
     if (inviteInfo) {
@@ -177,6 +175,6 @@ export class BoardService {
       statusCode: HttpStatus.CREATED,
       message: '보드 초대가 완료되었습니다.',
       data: inviteMember,
-  }
+    };
   }
 }

@@ -214,16 +214,20 @@ export class CardService {
     }
 
     // 카드 수정 적용하기
-    await this.cardRepository.update({ id: cardId }, updatecardDto);
+    await this.cardRepository.update(
+      { id: cardId },
+      { title, description, dueDate, color },
+    );
 
     // 수정된 카드 가져오기
     const updatedCard = await this.checkCardById(cardId);
-
+    console.log('6');
     const response: ApiResponse<Card> = {
       statusCode: HttpStatus.OK,
       message: '카드 수정에 성공했습니다.',
       data: updatedCard,
     };
+
     return response;
   }
   /**
@@ -339,25 +343,18 @@ export class CardService {
     if (!list) {
       throw new NotFoundException('없는 리스트입니다.');
     }
-    console.log('card.list = ', card.listId);
-    console.log('listId = ', listId);
 
     // 카드가 다른 리스트로 이동할 경우 리스트 변경
     if (card.listId !== listId) {
       card.listId = listId;
+      list.cards.push(card);
       console.log('if 에 걸릴 시 변경된 listId =', card.listId);
     }
-
+    console.log('카드', card);
+    console.log('리스트카드', list.cards);
     // 이동할 리스트의 카드를 rank 순서대로 정렬
     const cardsOnList = list.cards.sort((a, b) =>
       LexoRank.parse(a.rank).compareTo(LexoRank.parse(b.rank)),
-    );
-
-    console.log('cards = ', cardsOnList);
-    console.log('카드 = ', card);
-    console.log(
-      '카드인덱스: ',
-      cardsOnList.findIndex((card) => card.id === cardId),
     );
 
     // 옮겨지는 카드 삭제
@@ -365,12 +362,9 @@ export class CardService {
       cardsOnList.findIndex((card) => card.id === cardId),
       1,
     );
-    console.log(cardsOnList);
 
     // 새로운 위치에 카드 추가
     cardsOnList.splice(newOrder, 0, card);
-    console.log(cardsOnList);
-    console.log(cardsOnList.length);
 
     //카드 rank 재조정
     for (let i = 0; i < cardsOnList.length; i++) {
@@ -379,7 +373,6 @@ export class CardService {
         i === cardsOnList.length - 1
           ? null
           : LexoRank.parse(cardsOnList[i + 1].rank);
-      console.log(nextRank);
 
       if (prevRank && nextRank) {
         // 두 값이 다 있을 경우 prev, next 사이에 값 넣기
@@ -394,7 +387,7 @@ export class CardService {
         // prev, next 둘 다 없을 경우 기본 값 넣기
         cardsOnList[i].rank = LexoRank.middle().toString();
       }
-      console.log(cardsOnList);
+
       // 카드 저장
       await this.cardRepository.save(cardsOnList[i]);
     }
