@@ -89,10 +89,11 @@ export class BoardService {
     // 각 리스트를 rank로 정렬
     allListsInBoard.forEach(board => {
       board.list.sort((a, b) => a.rank.localeCompare(b.rank))
-      /* 보드 - 리스트 내 카드 정렬
+      //보드 - 리스트 내 카드 정렬
        board.list.forEach(list => {
-        list.cards.sort((a, b) => a.rank.localeCompare(b.rank)) */
+        list.cards.sort((a, b) => a.rank.localeCompare(b.rank))
       })
+    })
 
     
     return {
