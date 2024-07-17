@@ -16,7 +16,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/util/user-info.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import { FindListDto } from './dto/find-list.dto';
 import { MemberGuard } from 'src/auth/guards/member-auth.guard';
 
 @UseGuards(JwtAuthGuard)
@@ -41,12 +40,11 @@ export class ListController {
 
   /**
    * 리스트 조회
-   * @param findListDto
    * @returns
    */
   @Get('')
-  async findAllList(@UserInfo() user: User, @Query() findListDto: FindListDto) {
-    return this.listService.findAllList(user, findListDto);
+  async findAllList(@UserInfo() user: User, @Query('boardId') boardId: number) {
+    return this.listService.findAllList(user, +boardId);
   }
 
   /**

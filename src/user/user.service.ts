@@ -5,18 +5,25 @@ import {
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CheckEmailDto } from './dto/check-email.dto';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MESSAGES } from 'src/constants/message.constant';
 import { UserStatus } from './types/user-status.type';
 import _ from 'lodash';
+import { Member } from 'src/member/entites/member.entity';
+import { Board } from 'src/board/entities/board.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
+    @InjectRepository(Board)
+    private readonly boardRepository: Repository<Board>,
+    private dataSource: DataSource,
   ) {}
   async findById(id: number) {
     const user = await this.userRepository.findOneBy({ id });
@@ -71,8 +78,43 @@ export class UserService {
       throw new NotFoundException(MESSAGES.USERS.COMMON.NOT_FOUND);
     }
 
-    const user = await this.userRepository.softDelete({ id });
-    // TODO : 추후 Admin User 관련 처리 및 연관관계 처리
+    const isExistingAdmin = await this.boardRepository.findOne({
+      where: {
+        adminId: id,
+      },
+    });
+    if (isExistingAdmin) {
+      throw new NotFoundException(
+        MESSAGES.USERS.DELETE_ACCOUNT.ADMIN_CANNOT_DELETE,
+      );
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const userMembers = await queryRunner.manager.find(Member, {
+        where: {
+          userId: existedUser.id,
+        },
+      });
+
+      for (let member of userMembers) {
+        await queryRunner.manager.delete(Member, {
+          memberId: member.memberId,
+        });
+      }
+
+      await queryRunner.manager.softDelete(User, { id: existedUser.id });
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+
     return { id: id };
   }
 
