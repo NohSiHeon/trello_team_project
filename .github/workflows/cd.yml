@@ -47,7 +47,13 @@ jobs:
             # ">" 는 생성 또는 덮어쓰기
             # ">>" 는 내용 덧붙이기
             echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" > .env
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+            echo "DB_SYNC=${{ secrets.DB_SYNC }}" >> .env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
 
             # 의존성 설치
             # yarn --frozen-lockfile
