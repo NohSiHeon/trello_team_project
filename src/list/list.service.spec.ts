@@ -3,7 +3,7 @@ import { ListService } from './list.service';
 import { List } from './entities/list.entity';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateListDto } from './dto/create-list.dto';
 import { User } from 'src/user/entities/user.entity';
 import { LexoRank } from 'lexorank';
@@ -160,7 +160,7 @@ describe('ListService', () => {
       
       listRepository.find.mockResolvedValueOnce(lists)
 
-      await expect(service.updateListOrder(user, updateOrderDto)).rejects.toThrow(BadRequestException);
+      await expect(service.updateListOrder(user, updateOrderDto)).rejects.toThrow(NotFoundException);
     });
 
     it('should update the order of the list - Moving to the beginning', async () => {
