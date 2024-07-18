@@ -61,10 +61,9 @@ export class CardService {
     if (cards.length === 0) {
       // 카드가 처음 생길 경우 초기값 설정
       rank = LexoRank.middle().toString();
-      console.log('if');
     } else {
       // 마지막 카드보다 다음 순서로 설정
-      console.log('else');
+
       rank = LexoRank.parse(cards[cards.length - 1].rank)
         .genNext()
         .toString();
@@ -221,7 +220,7 @@ export class CardService {
 
     // 수정된 카드 가져오기
     const updatedCard = await this.checkCardById(cardId);
-    console.log('6');
+
     const response: ApiResponse<Card> = {
       statusCode: HttpStatus.OK,
       message: '카드 수정에 성공했습니다.',
@@ -348,10 +347,8 @@ export class CardService {
     if (card.listId !== listId) {
       card.listId = listId;
       list.cards.push(card);
-      console.log('if 에 걸릴 시 변경된 listId =', card.listId);
     }
-    console.log('카드', card);
-    console.log('리스트카드', list.cards);
+
     // 이동할 리스트의 카드를 rank 순서대로 정렬
     const cardsOnList = list.cards.sort((a, b) =>
       LexoRank.parse(a.rank).compareTo(LexoRank.parse(b.rank)),
