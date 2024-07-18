@@ -192,7 +192,7 @@ export class BoardService {
     if (!existedUser) {
       throw new NotFoundException('초대하려는 사용자를 찾을 수 없습니다.');
     }
-    const inviteInfo = await this.memberRepository.find({
+    const inviteInfo = await this.memberRepository.findOne({
       where: { boardId: boardId, userId: existedUser.id },
     });
     if (inviteInfo) {
