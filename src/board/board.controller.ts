@@ -9,6 +9,7 @@ import {
   UseGuards,
   Request,
   HttpStatus,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -18,6 +19,10 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserInfo } from 'src/util/user-info.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { CheckEmailDto } from 'src/user/dto/check-email.dto';
+import { UpdateAdminDto } from './dto/update-admin.dto';
+import { MemberGuard } from 'src/auth/guards/member-auth.guard';
+import { createResponse } from 'src/util/response-util';
+import { MESSAGES } from 'src/constants/message.constant';
 
 @ApiTags('boards')
 @ApiBearerAuth()
@@ -76,8 +81,28 @@ export class BoardController {
     @UserInfo() user: User,
     @Body() updateBoardDto: UpdateBoardDto,
   ) {
-    return this.boardService.update(user, +boardId, updateBoardDto)
-}
+    return this.boardService.update(user, +boardId, updateBoardDto);
+  }
+
+  /**
+   * 어드민 변경
+   * @param boardId
+   * @param updateAdminDto
+   * @returns
+   */
+  @UseGuards(MemberGuard)
+  @Patch(':boardId/admin')
+  updateAdminUser(
+    @Param('boardId', ParseIntPipe) id: number,
+    @Body() updateAdminDto: UpdateAdminDto,
+  ) {
+    const data = this.boardService.updateAdmin(id, updateAdminDto);
+    return createResponse(
+      HttpStatus.OK,
+      MESSAGES.BOARD.UPDATE_ADMIN.SUCCEED,
+      data,
+    );
+  }
 
   /**
    * 보드 삭제
@@ -86,7 +111,7 @@ export class BoardController {
    */
   @Delete(':boardId')
   remove(@Param('boardId') boardId: number) {
-    return this.boardService.remove(+boardId)
+    return this.boardService.remove(+boardId);
   }
 
   /**
@@ -103,6 +128,6 @@ export class BoardController {
     @Body() email: CheckEmailDto,
   ) {
     const adminId = req.user.id;
-    return this.boardService.inviteMember(+adminId, +boardId, email)
-}
+    return this.boardService.inviteMember(+adminId, +boardId, email);
+  }
 }

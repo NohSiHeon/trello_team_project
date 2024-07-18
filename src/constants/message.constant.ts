@@ -77,6 +77,10 @@ export const MESSAGES = {
   BOARD: {
     COMMON: {
       NOT_MEMBER: '보드에 추가된 유저가 아닙니다.',
+      NOT_FOUND: '해당하는 보드를 찾을 수 없습니다.',
+    },
+    UPDATE_ADMIN: {
+      SUCCEED: '어드민 유저 변경에 성공했습니다.',
     },
   },
 };
