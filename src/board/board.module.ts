@@ -11,6 +11,7 @@ import { List } from 'src/list/entities/list.entity';
 import { Member } from '../member/entites/member.entity';
 import { Board } from './entities/board.entity';
 import { Assignee } from 'src/card/entities/assignee.entity';
+import { MemberModule } from 'src/member/member.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { Assignee } from 'src/card/entities/assignee.entity';
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([Board, Member, User, Card, List]),
+    MemberModule,
     AuthModule,
   ],
   controllers: [BoardController],

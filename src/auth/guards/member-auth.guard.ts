@@ -12,8 +12,10 @@ export class MemberGuard implements CanActivate {
   constructor(private readonly memberservice: MemberService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const { userId, boardId } = request.body;
-
+    let { userId, boardId } = request.body;
+    if (request?.params?.boardId) boardId = request.params.boardId;
+    console.log(request.param);
+    console.log(boardId);
     if (!userId) {
       throw new NotFoundException(MESSAGES.AUTH.COMMON.MEMBER.NO_USER);
     }
