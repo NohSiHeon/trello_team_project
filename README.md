@@ -80,6 +80,9 @@ $ npm run test:cov
 
 [트렐로 프로젝트 ERD](https://drawsql.app/teams/les-team-1/diagrams/easy)
 
+## 사이트 정책
+[트렐로 프로젝트 정책](https://www.notion.so/teamsparta/270972fe7a3f4cd39609f6ab0ae30fda?pvs=4)
+
 ## 인증 및 인가
 
 - **JWT, UseGuards**를 사용하여 인증 및 인가를 처리합니다.
