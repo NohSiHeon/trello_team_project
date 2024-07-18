@@ -14,6 +14,8 @@ import { assignmentDto } from './dto/assignment.dto';
 import { Card } from 'src/card/entities/card.entity';
 import { List } from 'src/list/entities/list.entity';
 import { Member } from 'src/member/entites/member.entity';
+import { UpdateAdminDto } from './dto/update-admin.dto';
+import { MESSAGES } from 'src/constants/message.constant';
 
 @Injectable()
 export class BoardService {
@@ -127,6 +129,36 @@ export class BoardService {
       message: '보드 수정에 성공했습니다',
       data: updatedData,
     };
+  }
+
+  async updateAdmin(id: number, updateAdminDto: UpdateAdminDto) {
+    const { userId } = updateAdminDto;
+
+    const existedUser = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    if (!existedUser) {
+      throw new NotFoundException(MESSAGES.USERS.COMMON.NOT_FOUND);
+    }
+
+    const existedBoard = await this.boardRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!existedBoard) {
+      throw new NotFoundException(MESSAGES.BOARD.COMMON.NOT_FOUND);
+    }
+
+    const updateBoard = {
+      ...existedBoard,
+      ...{ adminId: userId },
+    };
+
+    const board = await this.boardRepository.save(updateBoard);
+    return { id: board.id, adminId: board.adminId };
   }
 
   async remove(id: number) {

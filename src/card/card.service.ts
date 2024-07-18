@@ -367,7 +367,7 @@ export class CardService {
     for (let i = 0; i < cardsOnList.length; i++) {
       const prevRank = i === 0 ? null : LexoRank.parse(cardsOnList[i - 1].rank);
       const nextRank =
-        i === cardsOnList.length - 1
+        i >= cardsOnList.length - 1
           ? null
           : LexoRank.parse(cardsOnList[i + 1].rank);
 
